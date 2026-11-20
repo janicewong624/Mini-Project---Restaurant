@@ -1,43 +1,46 @@
 <?php
+session_start();
 require_once __DIR__ . '/../../business/FeedbackService.php';
 
 $service   = new FeedbackService();
 $feedbacks = $service->getAll();
+
+$pageTitle = 'Feedback Records';
+include __DIR__ . '/../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Feedback List</title>
-</head>
-<body>
-    <h2>Feedback Records</h2>
 
-    <table border="1" cellpadding="6">
-        <tr>
-            <th>ID</th><th>Customer</th><th>Rating</th>
-            <th>Comment</th><th>Date</th><th>Action</th>
-        </tr>
-        <?php if (!$feedbacks): ?>
-            <tr><td colspan="6">No feedback yet.</td></tr>
-        <?php endif; ?>
-        <?php foreach ($feedbacks as $f): ?>
-        <tr>
-            <td><?= htmlspecialchars($f['feedbackID']) ?></td>
-            <td><?= htmlspecialchars($f['name']) ?></td>
-            <td style="color:#f5b301; font-size:20px;">
-                <?= str_repeat('★', (int)$f['rating']) . str_repeat('☆', 5 - (int)$f['rating']) ?>
-            </td>
-            <td><?= htmlspecialchars($f['comment'] ?? '') ?></td>
-            <td><?= date('d/m/Y H:i', strtotime($f['feedbackDate'])) ?></td>
-            <td>
-                <a href="feedback_edit.php?id=<?= urlencode($f['feedbackID']) ?>">Edit</a> |
-                <a href="feedback_delete.php?id=<?= urlencode($f['feedbackID']) ?>">Delete</a>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
+<h1 class="page-title">Feedback Records</h1>
+<p class="page-sub">All customer feedback and ratings.</p>
 
-    <p><a href="feedback_add.php">Add Feedback</a></p>
-</body>
-</html>
+<table class="table-clean">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php if (!$feedbacks): ?>
+        <tr><td colspan="6">No feedback yet.</td></tr>
+    <?php endif; ?>
+    <?php foreach ($feedbacks as $f): ?>
+        <tr>
+            <td><?= $e($f['feedbackID']) ?></td>
+            <td><?= $e($f['name']) ?></td>
+            <td><span class="star-display"><?= str_repeat('★', (int)$f['rating']) . str_repeat('☆', 5 - (int)$f['rating']) ?></span></td>
+            <td><?= $e($f['comment'] ?? '') ?></td>
+            <td><?= date('d/m/Y', strtotime($f['feedbackDate'])) ?></td>
+            <td class="actions">
+                <a class="link-edit" href="feedback_edit.php?id=<?= urlencode($f['feedbackID']) ?>">Edit</a>
+                <a class="link-delete" href="feedback_delete.php?id=<?= urlencode($f['feedbackID']) ?>">Delete</a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+
+<?php include __DIR__ . '/../includes/footer.php'; ?>

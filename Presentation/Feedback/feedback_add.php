@@ -13,77 +13,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rating  = $_POST['rating'] ?? '';
     $comment = $_POST['comment'] ?? '';
     $result  = $service->submit($userID, $rating, $comment);
-
     if ($result['success']) {
-        $success = "Thank you! Your feedback has been submitted (ID: {$result['id']}).";
+        $success = "Thank you! Your feedback has been submitted.";
         $rating = $comment = '';
     } else {
         $errors = $result['errors'];
     }
 }
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Submit Feedback</title>
-    <style>
-        .stars {
-            display: inline-flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-        }
-        .stars input { display: none; }
-        .stars label {
-            font-size: 40px;
-            color: #ccc;
-            cursor: pointer;
-            padding: 0 2px;
-            user-select: none;
-        }
-        .stars label:hover,
-        .stars label:hover ~ label,
-        .stars input:checked ~ label {
-            color: #f5b301;
-        }
-        textarea {
-            resize: none;
-            width: 320px;
-            height: 100px;
-        }
-        button[type="submit"] {
-            padding: 8px 24px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <h2>Submit Feedback</h2>
 
-    <?php foreach ($errors as $e): ?>
-        <p style="color:red;"><?= htmlspecialchars($e) ?></p>
+$pageTitle = 'Give Feedback';
+include __DIR__ . '/../includes/header.php';
+?>
+
+<h1 class="page-title">How was your meal?</h1>
+<p class="page-sub">Your feedback helps us serve you better.</p>
+
+<div class="panel">
+    <?php foreach ($errors as $err): ?>
+        <div class="alert alert-error"><?= $e($err) ?></div>
     <?php endforeach; ?>
     <?php if ($success): ?>
-        <p style="color:green;"><?= htmlspecialchars($success) ?></p>
+        <div class="alert alert-success"><?= $e($success) ?></div>
     <?php endif; ?>
 
     <form method="post">
-        <label>Rating:</label><br>
-        <div class="stars">
-            <?php for ($i = 5; $i >= 1; $i--): ?>
-                <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>"
-                       <?= $rating === (string)$i ? 'checked' : '' ?>>
-                <label for="star<?= $i ?>" title="<?= $i ?> star(s)">★</label>
-            <?php endfor; ?>
+        <div class="form-group">
+            <label class="field">Rating</label>
+            <div class="stars-input">
+                <?php for ($i = 5; $i >= 1; $i--): ?>
+                    <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>"
+                           <?= $rating === (string)$i ? 'checked' : '' ?>>
+                    <label for="star<?= $i ?>" title="<?= $i ?> star(s)">★</label>
+                <?php endfor; ?>
+            </div>
         </div>
-        <br><br>
 
-        <label>Comment:</label><br>
-        <textarea name="comment" maxlength="500"><?= htmlspecialchars($comment) ?></textarea>
-        <br><br>
+        <div class="form-group">
+            <label class="field" for="comment">Comment</label>
+            <textarea id="comment" name="comment" class="form-control" maxlength="500"><?= $e($comment) ?></textarea>
+        </div>
 
-        <button type="submit">Submit</button>
+        <button type="submit" class="btn btn-gold btn-sm">Submit</button>
     </form>
-</body>
-</html>
+</div>
+
+<?php include __DIR__ . '/../includes/footer.php'; ?>
