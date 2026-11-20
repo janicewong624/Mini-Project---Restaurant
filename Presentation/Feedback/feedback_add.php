@@ -39,11 +39,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #ccc;
             cursor: pointer;
             padding: 0 2px;
+            user-select: none;
         }
         .stars label:hover,
         .stars label:hover ~ label,
         .stars input:checked ~ label {
             color: #f5b301;
+        }
+        textarea {
+            resize: none;
+            width: 320px;
+            height: 100px;
+        }
+        button[type="submit"] {
+            padding: 8px 24px;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -69,7 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <br><br>
 
         <label>Comment:</label><br>
-        <textarea name="comment" rows="4" cols="40" maxlength="500"><?= htmlspecialchars($comment) ?></textarea><br><br>
+        <textarea name="comment" maxlength="500"><?= htmlspecialchars($comment) ?></textarea>
+        <br><br>
 
         <button type="submit">Submit</button>
     </form>
