@@ -1,12 +1,11 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-$restaurantName = 'Your Restaurant';          // 之後改店名只改這裡（index.php 也要同步）
+$restaurantName = 'Your Restaurant';          
 $role = $_SESSION['role'] ?? null;
 $name = $_SESSION['name'] ?? '';
 $e = fn($s) => htmlspecialchars((string)$s);
 
-/* 網站根目錄網址，自動算出，例如 /Mini-Project---Restaurant/ */
 $base = rtrim(str_replace('\\', '/', dirname(dirname(dirname($_SERVER['SCRIPT_NAME'])))), '/') . '/';
 ?>
 <!DOCTYPE html>
