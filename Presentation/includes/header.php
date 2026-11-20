@@ -17,7 +17,7 @@ $base = rtrim(str_replace('\\', '/', dirname(dirname(dirname($_SERVER['SCRIPT_NA
     <title><?= $e($pageTitle ?? $restaurantName) ?></title>
     <link rel="stylesheet" href="<?= $base ?>assets/css/style.css">
 </head>
-<body class="inner-page">
+<body class="inner-page <?= $e($bodyClass ?? '') ?>">
 
 <nav class="navbar">
     <div class="container">

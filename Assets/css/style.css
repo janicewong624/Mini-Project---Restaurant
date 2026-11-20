@@ -5,9 +5,9 @@
   --soft-green-dark: #5c7465;
   --gold: #d4a94f;
   --gold-dark: #b88c32;
-  --cream: #FAF7F2;    /* 奶白色背景 你要的 */
+  --cream: #FAF7F2;
   --paper: #ffffff;
-  --text: #3A3A38;     /* 深灰棕文字，柔和不刺眼 */
+  --text: #3A3A38;
   --muted: #777774;
   --shadow: 0 8px 24px rgba(120, 146, 130, .12);
 }
@@ -219,3 +219,33 @@ textarea.form-control { resize: none; height: 110px; }
 .stars-input label:hover ~ label,
 .stars-input input:checked ~ label { color: var(--gold); }
 .star-display { color: var(--gold); font-size: 1.2rem; letter-spacing: 2px; }
+
+/* ---------- Feedback 頁面：背景照片 + 置中 + 放大 ---------- */
+.feedback-page {
+  background:
+    linear-gradient(rgba(250,247,242,.45), rgba(250,247,242,.55)),
+    url('../images/hero.jpg') center / cover no-repeat fixed;
+}
+.feedback-page .page-main {
+  display: flex; align-items: center; justify-content: center;
+  min-height: calc(100vh - 100px - 150px);
+}
+.feedback-page .container { display: flex; flex-direction: column; align-items: center; }
+.feedback-page .page-title { text-align: center; font-size: 2.8rem; }
+.feedback-page .page-sub   { text-align: center; font-size: 1.15rem; margin-bottom: 34px; }
+
+.feedback-page .panel {
+  width: 100%; max-width: 680px;
+  padding: 48px 52px; border-radius: 16px;
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(4px);
+}
+.feedback-page .panel form { text-align: center; }
+.feedback-page .form-group { text-align: center; margin-bottom: 28px; }
+.feedback-page .form-group label.field { font-size: 1.15rem; margin-bottom: 10px; }
+.feedback-page .stars-input { justify-content: center; }
+.feedback-page .stars-input label { font-size: 62px; padding: 0 5px; }
+.feedback-page .form-control { text-align: left; font-size: 1.05rem; padding: 14px 16px; }
+.feedback-page textarea.form-control { height: 170px; }
+.feedback-page .btn-sm { padding: 14px 44px; font-size: 1.05rem; }
+.feedback-page .alert { font-size: 1.05rem; padding: 14px 18px; text-align: left; }

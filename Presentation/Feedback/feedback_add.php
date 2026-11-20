@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Give Feedback';
+$bodyClass = 'feedback-page';
 include __DIR__ . '/../includes/header.php';
 ?>
 
