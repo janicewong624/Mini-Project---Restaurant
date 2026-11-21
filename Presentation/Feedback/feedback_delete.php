@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Delete Feedback';
+$bodyClass = 'center-page';
 include __DIR__ . '/../includes/header.php';
 ?>
 

@@ -14,7 +14,7 @@ $base = rtrim(str_replace('\\', '/', dirname(dirname(dirname($_SERVER['SCRIPT_NA
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $e($pageTitle ?? $restaurantName) ?></title>
-    <link rel="stylesheet" href="<?= $base ?>assets/css/style.css">
+    <link rel="stylesheet" href="<?= $base ?>assets/css/style.css?v=<?= filemtime(__DIR__ . '/../../assets/css/style.css') ?>">
 </head>
 <body class="inner-page <?= $e($bodyClass ?? '') ?>">
 

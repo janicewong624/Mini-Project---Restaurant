@@ -195,6 +195,19 @@ footer .copy { margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(1
 .page-title { font-family: 'Playfair Display', serif; color: var(--soft-green-dark); font-size: 2rem; margin-bottom: 6px; }
 .page-sub { color: var(--muted); margin-bottom: 26px; }
 
+/* 內頁頁尾：精簡版（店名和版權同一行） */
+.inner-page footer { padding: 10px 0 !important; }
+.inner-page footer .container {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; flex-wrap: wrap;
+}
+.inner-page footer .serif { font-size: 1rem !important; margin: 0; }
+.inner-page footer p,
+.inner-page footer .copy {
+  margin: 0 !important; padding: 0 !important;
+  border-top: none !important; font-size: .8rem !important;
+}
+
 .panel {
   background: var(--paper); border-radius: 10px; padding: 30px;
   box-shadow: var(--shadow); max-width: 560px;
@@ -239,31 +252,41 @@ textarea.form-control { resize: none; height: 110px; }
 .stars-input input:checked ~ label { color: var(--gold); }
 .star-display { color: var(--gold); font-size: 1.2rem; letter-spacing: 2px; }
 
-/* ---------- Feedback 頁面：背景照片 + 置中 ---------- */
-.feedback-page {
+/* ---------- Feedback / Delete 頁面：背景照片 + 置中 ---------- */
+.feedback-page,
+.center-page {
   background:
     linear-gradient(rgba(250,247,242,.45), rgba(250,247,242,.55)),
     url('../images/hero.jpg') center / cover no-repeat fixed;
 }
-.feedback-page .page-main {
+.feedback-page .page-main,
+.center-page .page-main {
   display: flex; align-items: center; justify-content: center;
-  padding: 30px 0 40px; min-height: calc(100vh - 160px);
+  padding: 20px 0; min-height: calc(100vh - 140px);
 }
-.feedback-page .container { display: flex; flex-direction: column; align-items: center; }
+/* 只影響內容區，不影響導覽列和頁尾 */
+.feedback-page .page-main .container,
+.center-page .page-main .container {
+  display: flex; flex-direction: column; align-items: center;
+}
 
 .feedback-page .page-title,
-.feedback-page .page-sub {
+.feedback-page .page-sub,
+.center-page .page-title,
+.center-page .page-sub {
   text-align: center;
   display: block;
 }
-.feedback-page .page-title {
+.feedback-page .page-title,
+.center-page .page-title {
   font-size: 2.3rem; margin-bottom: 8px; color: #2f4a3b;
   text-shadow:
     0 0 8px rgba(250,247,242,.95),
     0 0 18px rgba(250,247,242,.9),
     0 0 30px rgba(250,247,242,.8);
 }
-.feedback-page .page-sub {
+.feedback-page .page-sub,
+.center-page .page-sub {
   font-size: 1.05rem; margin-bottom: 22px; color: #1f1f1d; font-weight: 700;
   text-shadow:
     0 0 6px rgba(250,247,242,.95),
@@ -271,12 +294,15 @@ textarea.form-control { resize: none; height: 110px; }
     0 0 26px rgba(250,247,242,.8);
 }
 
-.feedback-page .panel {
+.feedback-page .panel,
+.center-page .panel {
   width: 100%; max-width: 500px;
   padding: 28px 34px; border-radius: 14px;
   background: rgba(255,255,255,.94);
   backdrop-filter: blur(4px);
 }
+.center-page .panel { text-align: center; }
+
 .feedback-page .panel form { text-align: center; }
 .feedback-page .form-group { text-align: center; margin-bottom: 18px; }
 .feedback-page .form-group label.field { font-size: 1rem; margin-bottom: 6px; }
