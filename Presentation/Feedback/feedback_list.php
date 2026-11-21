@@ -6,6 +6,7 @@ $service   = new FeedbackService();
 $feedbacks = $service->getAll();
 
 $pageTitle = 'Feedback Records';
+$bodyClass = 'feedback-page list-page';
 include __DIR__ . '/../includes/header.php';
 ?>
 

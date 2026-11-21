@@ -255,11 +255,19 @@ textarea.form-control { resize: none; height: 110px; }
 .stars-input input:checked ~ label { color: var(--gold); }
 .star-display { color: var(--gold); font-size: 1.2rem; letter-spacing: 2px; }
 
+/* Feedback（新增、編輯、刪除）用 feedback1.jpg */
 .feedback-page,
 .center-page {
   background:
     linear-gradient(rgba(250,247,242,.45), rgba(250,247,242,.55)),
-    url('../images/hero.jpg') center / cover no-repeat fixed;
+    url('../images/feedback1.jpg') center / cover no-repeat fixed;
+}
+
+/* Payment 相關頁面用 payment1.jpg */
+.payment-page {
+  background:
+    linear-gradient(rgba(250,247,242,.45), rgba(250,247,242,.55)),
+    url('../images/payment1.jpg') center / cover no-repeat fixed;
 }
 .feedback-page .page-main,
 .center-page .page-main {
