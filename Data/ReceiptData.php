@@ -31,7 +31,7 @@ class ReceiptData {
     public function getHeader(string $paymentID): ?array {
         $stmt = $this->pdo->prepare(
             "SELECT p.paymentID, p.paymentAmount, p.paymentMethod, p.paymentDate, p.paymentStatus,
-                    o.orderID, o.orderType, u.name AS customerName, t.tableNumber
+                    o.orderID, o.orderType, u.name AS customerName, u.email AS customerEmail, t.tableNumber
              FROM payment p
              JOIN orders o ON p.orderID = o.orderID
              JOIN user u ON o.userID = u.userID

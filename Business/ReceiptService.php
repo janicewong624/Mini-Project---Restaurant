@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../data/ReceiptData.php';
+require_once __DIR__ . '/MailService.php';
 
 class ReceiptService {
     private ReceiptData $data;
@@ -30,5 +31,40 @@ class ReceiptService {
             'items'   => $this->data->getItems($header['orderID']),
             'type'    => $type,
         ];
+    }
+
+        /** 把顧客版收據（Original）寄到顧客 email */
+    public function emailToCustomer(string $paymentID): array {
+        $data = $this->view($paymentID, 'Original');
+        if (!$data) return ['success' => false, 'error' => 'Receipt not found.'];
+
+        $h = $data['header'];
+        if ($h['paymentStatus'] !== 'Completed') {
+            return ['success' => false, 'error' => 'Only completed payments can be emailed.'];
+        }
+
+        $rows = '';
+        foreach ($data['items'] as $it) {
+            $rows .= '<tr><td>' . htmlspecialchars($it['foodName']) . '</td>'
+                   . '<td align="center">x' . (int)$it['quantity'] . '</td>'
+                   . '<td align="right">RM ' . number_format((float)$it['subtotal'], 2) . '</td></tr>';
+        }
+
+        $html = '<div style="font-family:Arial,sans-serif;max-width:420px;margin:auto;border:1px solid #ddd;padding:20px;">'
+              . '<h2 style="text-align:center;margin:0;">Your Restaurant</h2>'
+              . '<p style="text-align:center;color:#777;margin:4px 0 14px;">Payment Receipt</p><hr>'
+              . '<p>Receipt No: ' . htmlspecialchars($data['receipt']['receiptID']) . '<br>'
+              . 'Order: ' . htmlspecialchars($h['orderID']) . '<br>'
+              . 'Date: ' . date('d/m/Y H:i', strtotime($h['paymentDate'])) . '<br>'
+              . 'Table: ' . htmlspecialchars((string)$h['tableNumber']) . '</p><hr>'
+              . '<table width="100%" cellpadding="4">' . $rows . '</table><hr>'
+              . '<p style="font-size:18px;"><strong>Total: RM ' . number_format((float)$h['paymentAmount'], 2) . '</strong></p>'
+              . '<p>Payment Method: ' . htmlspecialchars($h['paymentMethod']) . '</p>'
+              . '<p style="text-align:center;color:#777;">Thank you for dining with us!</p></div>';
+
+        return (new MailService())->send(
+            $h['customerEmail'], $h['customerName'],
+            'Your receipt - Order ' . $h['orderID'], $html
+        );
     }
 }

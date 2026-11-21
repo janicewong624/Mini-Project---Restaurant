@@ -5,6 +5,13 @@ require_once __DIR__ . '/../../business/ReceiptService.php';
 $id   = $_GET['id'] ?? '';
 $type = $_GET['type'] ?? 'Original';
 
+$mailMsg = ''; $mailOk = false;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_email'])) {
+    $r = (new ReceiptService())->emailToCustomer($id);
+    $mailOk  = $r['success'];
+    $mailMsg = $mailOk ? 'Receipt has been emailed to the customer.' : ($r['error'] ?? 'Failed to send.');
+}
+
 $data = (new ReceiptService())->view($id, $type);
 if ($data === null) {
     exit("Receipt not found. <a href='../payment/payment_list.php'>Back</a>");
@@ -17,6 +24,12 @@ $pageTitle = 'Receipt';
 $bodyClass = 'feedback-page payment-page receipt-page';
 include __DIR__ . '/../includes/header.php';
 ?>
+
+<?php if ($mailMsg): ?>
+    <div class="alert <?= $mailOk ? 'alert-success' : 'alert-error' ?> no-print" style="max-width:380px;margin:0 auto 14px;">
+        <?= $e($mailMsg) ?>
+    </div>
+<?php endif; ?>
 
 <div class="receipt-tabs no-print">
     <a href="?id=<?= urlencode($id) ?>&type=Original"  class="<?= $type === 'Original'  ? 'active' : '' ?>">Customer Copy (Original)</a>
@@ -51,9 +64,14 @@ include __DIR__ . '/../includes/header.php';
     <p class="center">Thank you!</p>
 </div>
 
-<p class="no-print" style="text-align:center;margin-top:16px;">
+<div class="no-print" style="text-align:center;margin-top:16px;">
     <button onclick="window.print()" class="btn btn-gold btn-sm">Print</button>
+    <?php if (!$voided): ?>
+        <form method="post" style="display:inline;">
+            <button type="submit" name="send_email" class="btn btn-gold btn-sm">Email to Customer</button>
+        </form>
+    <?php endif; ?>
     <a href="../payment/payment_list.php" class="btn btn-secondary btn-sm">Back to Payments</a>
-</p>
+</div>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
