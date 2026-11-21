@@ -331,3 +331,63 @@ textarea.form-control { resize: none; height: 110px; }
 .center-page .panel p strong { font-size: 1.2rem; }
 .center-page .star-display { font-size: 1.6rem; }
 .center-page .panel .btn-sm { padding: 13px 36px; font-size: 1.05rem; }
+
+/* ================= Payment / Receipt ================= */
+.payment-page {
+  background:
+    linear-gradient(rgba(250,247,242,.45), rgba(250,247,242,.55)),
+    url('../images/payment1.jpg') center / cover no-repeat fixed;
+}
+.payment-page select.form-control { text-align: left; cursor: pointer; }
+.payment-page .btn-secondary { display: inline-block; }
+
+.receipt-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.receipt-tabs a {
+  padding: 8px 18px; border-radius: 999px; background: rgba(255,255,255,.9);
+  font-weight: 700; font-size: .9rem; color: var(--soft-green-dark);
+}
+.receipt-tabs a.active { background: var(--gold); color: #fff; }
+
+.receipt {
+  position: relative; background: #fff; width: 100%; max-width: 380px; margin: 28px auto;
+  padding: 30px 28px; box-shadow: none; border-radius: 0;
+  font-family: 'Courier New', monospace; font-size: .92rem; color: #222;
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,.25));   /* 陰影要用 filter，鋸齒才會跟著有陰影 */
+}
+/* 上下鋸齒 */
+.receipt::before,
+.receipt::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 14px;
+  background:
+    linear-gradient(135deg, #fff 50%, transparent 50%) 0 0 / 20px 20px repeat-x;
+}
+.receipt::before {
+  top: -13px;
+  background:
+    linear-gradient(135deg, transparent 50%, #fff 50%) 0 100% / 20px 14px repeat-x,
+    linear-gradient(225deg, transparent 50%, #fff 50%) 0 100% / 20px 14px repeat-x;
+}
+.receipt::after {
+  bottom: -13px;
+  background:
+    linear-gradient(45deg, transparent 50%, #fff 50%) 0 0 / 20px 14px repeat-x,
+    linear-gradient(315deg, transparent 50%, #fff 50%) 0 0 / 20px 14px repeat-x;
+}
+.receipt h2 { text-align: center; font-family: 'Playfair Display', serif; margin-bottom: 2px; }
+.receipt .center { text-align: center; }
+.receipt hr { border: none; border-top: 1px dashed #999; margin: 10px 0; }
+.receipt table { width: 100%; }
+.receipt td { padding: 2px 0; }
+.receipt .r { text-align: right; }
+.receipt .total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; }
+.receipt-void {
+  position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%) rotate(-20deg);
+  font-size: 3rem; font-weight: 800; color: rgba(192,80,77,.35);
+  border: 5px solid rgba(192,80,77,.35); padding: 0 16px; pointer-events: none;
+}
+
+@media print {
+  .navbar, footer, .no-print { display: none !important; }
+  .payment-page { background: #fff !important; }
+  .receipt { box-shadow: none; }
+}
