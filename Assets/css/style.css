@@ -357,7 +357,7 @@ textarea.form-control { resize: none; height: 110px; }
 /* 上下鋸齒 */
 .receipt::before,
 .receipt::after {
-  content: ""; position: absolute; left: 0; right: 0; height: 14px;
+  content: ""; position: absolute; left: 0; right: 0; height: 20px;
   background:
     linear-gradient(135deg, #fff 50%, transparent 50%) 0 0 / 20px 20px repeat-x;
 }
