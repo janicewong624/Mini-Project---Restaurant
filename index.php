@@ -1,10 +1,8 @@
 <?php
 session_start();
 
-/* ====== 店名在這裡改一次就好 ====== */
-$restaurantName = 'Your Restaurant';
+$restaurantName = 'DineNest Restaurant';
 $tagline        = 'Good food, made with heart';
-/* ================================= */
 
 $role = $_SESSION['role'] ?? null;   // Customer / Administrator / null
 $name = $_SESSION['name'] ?? '';

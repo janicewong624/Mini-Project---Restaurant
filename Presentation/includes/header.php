@@ -1,7 +1,7 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-$restaurantName = 'Your Restaurant';          
+$restaurantName = 'DineNest Restaurant';          
 $role = $_SESSION['role'] ?? null;
 $name = $_SESSION['name'] ?? '';
 $e = fn($s) => htmlspecialchars((string)$s);

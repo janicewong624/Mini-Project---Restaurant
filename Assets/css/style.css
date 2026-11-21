@@ -263,7 +263,6 @@ textarea.form-control { resize: none; height: 110px; }
     url('../images/feedback1.jpg') center / cover no-repeat fixed;
 }
 
-/* Payment 相關頁面用 payment1.jpg */
 .payment-page {
   background:
     linear-gradient(rgba(250,247,242,.45), rgba(250,247,242,.55)),
@@ -352,7 +351,7 @@ textarea.form-control { resize: none; height: 110px; }
   position: relative; background: #fff; width: 100%; max-width: 380px; margin: 28px auto;
   padding: 30px 28px; box-shadow: none; border-radius: 0;
   font-family: 'Courier New', monospace; font-size: .92rem; color: #222;
-  filter: drop-shadow(0 8px 14px rgba(0,0,0,.25));   /* 陰影要用 filter，鋸齒才會跟著有陰影 */
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,.25));   
 }
 /* 上下鋸齒 */
 .receipt::before,
