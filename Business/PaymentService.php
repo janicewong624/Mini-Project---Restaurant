@@ -4,6 +4,7 @@ require_once __DIR__ . '/ReceiptService.php';
 
 class PaymentService {
     const METHODS = ['Cash', 'Online Payment'];
+    const ONLINE_TYPES = ['TNG eWallet', 'Credit/Debit Card'];
 
     private PaymentData $data;
 
@@ -15,14 +16,29 @@ class PaymentService {
     public function getById(string $id): ?array { return $this->data->findById($id); }
     public function getPayableOrders(): array   { return $this->data->getPayableOrders(); }
 
-    /** 新增付款（確認收款）：Completed + 訂單 Completed + 自動產生兩張收據 */
-    public function add(string $orderID, string $method): array {
+    /** 驗證付款方式與線上類型，回傳 [錯誤陣列, 要存的 onlineType] */
+    private function checkMethod(string $method, string $onlineType): array {
         $errors = [];
-        $orderID = trim($orderID);
+        if ($method === '') {
+            $errors[] = "Please select a payment method.";
+        } elseif (!in_array($method, self::METHODS, true)) {
+            $errors[] = "Invalid payment method.";
+        } elseif ($method === 'Online Payment') {
+            if ($onlineType === '')                                     $errors[] = "Please select an online payment type.";
+        elseif (!in_array($onlineType, self::ONLINE_TYPES, true))   $errors[] = "Invalid online payment type.";
+        }
+        $store = ($method === 'Online Payment') ? $onlineType : null;  
+        return [$errors, $store];
+    }
 
-        if ($orderID === '')                         $errors[] = "Please select an order.";
-        if ($method === '')                          $errors[] = "Please select a payment method.";
-        elseif (!in_array($method, self::METHODS, true)) $errors[] = "Invalid payment method.";
+    /** 新增付款（確認收款）：Completed + 訂單 Completed + 自動產生兩張收據 */
+    public function add(string $orderID, string $method, string $onlineType = ''): array {
+        $orderID = trim($orderID);
+        $errors = [];
+        
+        if ($orderID === '') $errors[] = "Please select an order.";
+        [$methodErrors, $onlineStore] = $this->checkMethod($method, $onlineType);
+        $errors = array_merge($errors, $methodErrors);
         if ($errors) return ['success' => false, 'errors' => $errors];
 
         $order = $this->data->getOrder($orderID);
@@ -40,9 +56,9 @@ class PaymentService {
             $this->data->begin();
             if ($existing) {                       // 訂單建立時已有 Pending 付款
                 $paymentID = $existing['paymentID'];
-                $this->data->completePending($paymentID, $amount, $method);
+                $this->data->completePending($paymentID, $amount, $method, $onlineStore);
             } else {
-                $paymentID = $this->data->insert($orderID, $amount, $method, 'Completed');
+                $paymentID = $this->data->insert($orderID, $amount, $method, $onlineStore, 'Completed');
             }
             $this->data->setOrderStatus($orderID, 'Completed');
             (new ReceiptService($this->data->pdo()))->generate($paymentID);
@@ -55,14 +71,15 @@ class PaymentService {
     }
 
     /** 修改付款方式（金額跟訂單綁定，不能改） */
-    public function updateMethod(string $id, string $method): array {
+    public function updateMethod(string $id, string $method, string $onlineType = ''): array {
         $payment = $this->data->findById($id);
-        if (!$payment)                                   return $this->fail("Payment record not found.");
-        if ($payment['paymentStatus'] === 'Cancelled')   return $this->fail("A cancelled payment cannot be edited.");
-        if ($method === '')                              return $this->fail("Please select a payment method.");
-        if (!in_array($method, self::METHODS, true))     return $this->fail("Invalid payment method.");
+        if (!$payment)                                 return $this->fail("Payment record not found.");
+        if ($payment['paymentStatus'] === 'Cancelled') return $this->fail("A cancelled payment cannot be edited.");
 
-        $this->data->updateMethod($id, $method);
+        [$errors, $onlineStore] = $this->checkMethod($method, $onlineType);
+        if ($errors) return ['success' => false, 'errors' => $errors];
+
+        $this->data->updateMethod($id, $method, $onlineStore);
         return ['success' => true, 'errors' => []];
     }
 

@@ -2,16 +2,18 @@
 session_start();
 require_once __DIR__ . '/../../business/PaymentService.php';
 
-$service = new PaymentService();
-$orders  = $service->getPayableOrders();
-$errors  = [];
-$orderID = '';
-$method  = '';
+$service    = new PaymentService();
+$orders     = $service->getPayableOrders();
+$errors     = [];
+$orderID    = '';
+$method     = '';
+$onlineType = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $orderID = $_POST['orderID'] ?? '';
-    $method  = $_POST['method'] ?? '';
-    $result  = $service->add($orderID, $method);
+    $orderID    = $_POST['orderID'] ?? '';
+    $method     = $_POST['method'] ?? '';
+    $onlineType = $_POST['onlineType'] ?? '';
+    $result     = $service->add($orderID, $method, $onlineType);
 
     if ($result['success']) {
         header("Location: ../Receipt/receipt_view.php?id=" . urlencode($result['id']));
@@ -62,6 +64,16 @@ include __DIR__ . '/../includes/header.php';
             </select>
         </div>
 
+        <div class="form-group" id="onlineBox" style="display:none;">
+            <label class="field" for="onlineType">Online Payment Type</label>
+            <select id="onlineType" name="onlineType" class="form-control">
+                <option value="">-- Select type --</option>
+                <?php foreach (PaymentService::ONLINE_TYPES as $t): ?>
+                    <option value="<?= $e($t) ?>" <?= $onlineType === $t ? 'selected' : '' ?>><?= $e($t) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
         <button type="submit" class="btn btn-gold btn-sm">Confirm Payment</button>
         <a href="payment_list.php" class="btn btn-secondary btn-sm">Back</a>
     </form>
@@ -74,6 +86,16 @@ function showAmount() {
     box.textContent = 'RM ' + (opt.dataset.amount || '0.00');
 }
 sel.addEventListener('change', showAmount); showAmount();
+
+const methodSel = document.getElementById('method'),
+      onlineBox = document.getElementById('onlineBox'),
+      onlineSel = document.getElementById('onlineType');
+function toggleOnline() {
+    const on = methodSel.value === 'Online Payment';
+    onlineBox.style.display = on ? 'block' : 'none';
+    if (!on) onlineSel.value = '';
+}
+methodSel.addEventListener('change', toggleOnline); toggleOnline();
 </script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

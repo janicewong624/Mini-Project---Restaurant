@@ -33,7 +33,7 @@ class ReceiptService {
         ];
     }
 
-        /** 把顧客版收據（Original）寄到顧客 email */
+    /** 把顧客版收據（Original）寄到顧客 email */
     public function emailToCustomer(string $paymentID): array {
         $data = $this->view($paymentID, 'Original');
         if (!$data) return ['success' => false, 'error' => 'Receipt not found.'];
@@ -43,6 +43,10 @@ class ReceiptService {
             return ['success' => false, 'error' => 'Only completed payments can be emailed.'];
         }
 
+        $restaurantName = 'DineNest Restaurant';   // 與 header.php 的 $restaurantName 保持一致
+
+        $method = $h['paymentMethod'] . (!empty($h['onlineType']) ? ' (' . $h['onlineType'] . ')' : '');
+
         $rows = '';
         foreach ($data['items'] as $it) {
             $rows .= '<tr><td>' . htmlspecialchars($it['foodName']) . '</td>'
@@ -51,7 +55,7 @@ class ReceiptService {
         }
 
         $html = '<div style="font-family:Arial,sans-serif;max-width:420px;margin:auto;border:1px solid #ddd;padding:20px;">'
-              . '<h2 style="text-align:center;margin:0;">Your Restaurant</h2>'
+              . '<h2 style="text-align:center;margin:0;">' . htmlspecialchars($restaurantName) . '</h2>'
               . '<p style="text-align:center;color:#777;margin:4px 0 14px;">Payment Receipt</p><hr>'
               . '<p>Receipt No: ' . htmlspecialchars($data['receipt']['receiptID']) . '<br>'
               . 'Order: ' . htmlspecialchars($h['orderID']) . '<br>'
@@ -59,7 +63,7 @@ class ReceiptService {
               . 'Table: ' . htmlspecialchars((string)$h['tableNumber']) . '</p><hr>'
               . '<table width="100%" cellpadding="4">' . $rows . '</table><hr>'
               . '<p style="font-size:18px;"><strong>Total: RM ' . number_format((float)$h['paymentAmount'], 2) . '</strong></p>'
-              . '<p>Payment Method: ' . htmlspecialchars($h['paymentMethod']) . '</p>'
+              . '<p>Payment Method: ' . htmlspecialchars($method) . '</p>'
               . '<p style="text-align:center;color:#777;">Thank you for dining with us!</p></div>';
 
         return (new MailService())->send(

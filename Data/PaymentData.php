@@ -62,27 +62,27 @@ class PaymentData {
         )->fetchAll();
     }
 
-    public function insert(string $orderID, float $amount, string $method, string $status): string {
+    public function insert(string $orderID, float $amount, string $method, ?string $onlineType, string $status): string {
         $id = Database::generateID($this->pdo, 'payment', 'paymentID', 'P', 4);
         $stmt = $this->pdo->prepare(
-            "INSERT INTO payment (paymentID, orderID, paymentAmount, paymentMethod, paymentDate, paymentStatus)
-             VALUES (?, ?, ?, ?, NOW(), ?)"
+            "INSERT INTO payment (paymentID, orderID, paymentAmount, paymentMethod, onlineType, paymentDate, paymentStatus)
+             VALUES (?, ?, ?, ?, ?, NOW(), ?)"
         );
-        $stmt->execute([$id, $orderID, $amount, $method, $status]);
+        $stmt->execute([$id, $orderID, $amount, $method, $onlineType, $status]);
         return $id;
     }
 
-    public function completePending(string $paymentID, float $amount, string $method): void {
+    public function completePending(string $paymentID, float $amount, string $method, ?string $onlineType): void {
         $stmt = $this->pdo->prepare(
-            "UPDATE payment SET paymentAmount = ?, paymentMethod = ?, paymentDate = NOW(), paymentStatus = 'Completed'
+            "UPDATE payment SET paymentAmount = ?, paymentMethod = ?, onlineType = ?, paymentDate = NOW(), paymentStatus = 'Completed'
              WHERE paymentID = ?"
         );
-        $stmt->execute([$amount, $method, $paymentID]);
+        $stmt->execute([$amount, $method, $onlineType, $paymentID]);
     }
 
-    public function updateMethod(string $id, string $method): void {
-        $stmt = $this->pdo->prepare("UPDATE payment SET paymentMethod = ? WHERE paymentID = ?");
-        $stmt->execute([$method, $id]);
+    public function updateMethod(string $id, string $method, ?string $onlineType): void {
+        $stmt = $this->pdo->prepare("UPDATE payment SET paymentMethod = ?, onlineType = ? WHERE paymentID = ?");
+        $stmt->execute([$method, $onlineType, $id]);
     }
 
     public function setStatus(string $id, string $status): void {

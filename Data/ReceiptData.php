@@ -30,7 +30,7 @@ class ReceiptData {
     /** 收據表頭：付款 + 訂單 + 顧客 + 桌號（不重複存內容，查看時才 join） */
     public function getHeader(string $paymentID): ?array {
         $stmt = $this->pdo->prepare(
-            "SELECT p.paymentID, p.paymentAmount, p.paymentMethod, p.paymentDate, p.paymentStatus,
+            "SELECT p.paymentID, p.paymentAmount, p.paymentMethod, p.onlineType, p.paymentDate, p.paymentStatus,
                     o.orderID, o.orderType, u.name AS customerName, u.email AS customerEmail, t.tableNumber
              FROM payment p
              JOIN orders o ON p.orderID = o.orderID

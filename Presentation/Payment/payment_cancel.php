@@ -34,7 +34,10 @@ include __DIR__ . '/../includes/header.php';
 
     <p><strong><?= $e($payment['paymentID']) ?> · Order <?= $e($payment['orderID']) ?></strong></p>
     <p><?= $e($payment['name']) ?></p>
-    <p style="margin:10px 0 24px;">RM <?= number_format((float)$payment['paymentAmount'], 2) ?> · <?= $e($payment['paymentMethod'] ?? '-') ?></p>
+    <p style="margin:10px 0 24px;">
+        RM <?= number_format((float)$payment['paymentAmount'], 2) ?> ·
+        <?= $e($payment['paymentMethod'] ?? '-') ?><?= !empty($payment['onlineType']) ? ' (' . $e($payment['onlineType']) . ')' : '' ?>
+    </p>
 
     <form method="post">
         <input type="hidden" name="id" value="<?= $e($id) ?>">

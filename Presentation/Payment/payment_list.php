@@ -37,12 +37,12 @@ include __DIR__ . '/../includes/header.php';
             <td><?= $e($p['orderID']) ?></td>
             <td><?= $e($p['name']) ?></td>
             <td>RM <?= number_format((float)$p['paymentAmount'], 2) ?></td>
-            <td><?= $e($p['paymentMethod'] ?? '-') ?></td>
+            <td><?= $e($p['paymentMethod'] ?? '-') ?><?= !empty($p['onlineType']) ? ' (' . $e($p['onlineType']) . ')' : '' ?></td>
             <td><span class="badge badge-<?= strtolower($e($p['paymentStatus'])) ?>"><?= $e($p['paymentStatus']) ?></span></td>
-            <td><?= date('d/m/Y', strtotime($p['paymentDate'])) ?></td>
+            <td><?= $p['paymentDate'] ? date('d/m/Y H:i', strtotime($p['paymentDate'])) : '-' ?></td>
             <td class="actions">
                 <?php if ($p['paymentStatus'] === 'Completed'): ?>
-                    <a class="link-edit" href="../receipt/receipt_view.php?id=<?= urlencode($p['paymentID']) ?>">Receipt</a>
+                    <a class="link-edit" href="../Receipt/receipt_view.php?id=<?= urlencode($p['paymentID']) ?>">Receipt</a>
                 <?php endif; ?>
                 <?php if ($p['paymentStatus'] !== 'Cancelled'): ?>
                     <a class="link-edit" href="payment_edit.php?id=<?= urlencode($p['paymentID']) ?>">Edit</a>

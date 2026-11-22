@@ -58,7 +58,7 @@ include __DIR__ . '/../includes/header.php';
     </table>
     <hr>
     <p class="total">TOTAL <span>RM <?= number_format((float)$h['paymentAmount'], 2) ?></span></p>
-    <p>Payment Method : <?= $e($h['paymentMethod']) ?></p>
+    <p>Payment Method : <?= $e($h['paymentMethod']) ?><?= !empty($h['onlineType']) ? ' (' . $e($h['onlineType']) . ')' : '' ?></p>
     <p>Status         : <?= $voided ? 'CANCELLED' : 'PAID' ?></p>
     <hr>
     <p class="center">Thank you!</p>
