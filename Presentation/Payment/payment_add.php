@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result  = $service->add($orderID, $method);
 
     if ($result['success']) {
-        header("Location: ../receipt/receipt_view.php?id=" . urlencode($result['id']));
+        header("Location: ../Receipt/receipt_view.php?id=" . urlencode($result['id']));
         exit;
     }
     $errors = $result['errors'];
