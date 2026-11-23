@@ -14,6 +14,7 @@ $e = fn($s) => htmlspecialchars($s);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $e($restaurantName) ?></title>
+    <link rel="icon" type="image/png" href="Assets/images/favicon.png">
     <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/assets/css/style.css') ?>">
 </head>
 <body>
