@@ -36,6 +36,7 @@
                 <a href="<?= $base ?>presentation/table/">Tables</a>
                 <a href="<?= $base ?>presentation/order/">Orders</a>
                 <a href="<?= $base ?>presentation/payment/payment_list.php">Payments</a>
+                <a href="<?= $base ?>presentation/report/">Reports</a>
                 <a href="<?= $base ?>presentation/feedback/feedback_list.php">Feedback</a>
                 <a href="<?= $base ?>presentation/auth/logout.php" class="btn-nav">Logout</a>
 
