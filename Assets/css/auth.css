@@ -1,0 +1,191 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-page .navbar { position: relative; }
+
+.auth-main {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 48px 20px;
+  background:
+    linear-gradient(rgba(250,247,242,.62), rgba(250,247,242,.72)),
+    url('../images/hero.jpg') center / cover no-repeat fixed;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 500px;
+  padding: 36px 42px;
+  border: 1px solid rgba(120,146,130,.18);
+  border-radius: 14px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 12px 38px rgba(58,58,56,.14);
+}
+
+.auth-card-register { max-width: 560px; }
+
+.auth-brand,
+.auth-heading { text-align: center; }
+
+.auth-brand { margin-bottom: 20px; }
+
+.auth-brand-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 8px;
+  object-fit: contain;
+}
+
+.auth-eyebrow {
+  color: var(--soft-green-dark);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.auth-heading { margin-bottom: 26px; }
+
+.auth-heading h1 {
+  color: var(--soft-green-dark);
+  font: 700 2rem/1.2 'Playfair Display', 'Noto Sans TC', serif;
+  margin-bottom: 8px;
+}
+
+.auth-heading p { color: var(--muted); }
+
+.auth-page .form-group { margin-bottom: 17px; }
+
+.auth-password { position: relative; }
+.auth-password .form-control { padding-right: 68px; }
+
+.auth-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--soft-green-dark);
+  font: 700 .85rem 'Nunito', sans-serif;
+  cursor: pointer;
+}
+
+.auth-toggle:hover,
+.auth-switch a:hover,
+.auth-home-link:hover { color: var(--gold-dark); }
+
+.auth-hint,
+.auth-field-error { display: block; margin-top: 5px; font-size: .82rem; }
+.auth-hint { color: var(--muted); }
+.auth-field-error { color: #9b2c2c; }
+.auth-field-error:empty { display: none; }
+.auth-invalid { border-color: #d96666 !important; }
+
+.auth-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: .9rem;
+}
+
+.auth-terms input {
+  margin-top: 5px;
+  accent-color: var(--soft-green);
+}
+
+.auth-terms a {
+  color: var(--soft-green-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.auth-terms a:hover { color: var(--gold-dark); }
+
+.terms-card,
+.privacy-card { max-width: 760px; }
+.policy-content h2 {
+  margin: 22px 0 7px;
+  color: var(--soft-green-dark);
+  font: 700 1.15rem 'Playfair Display', 'Noto Sans TC', serif;
+  scroll-margin-top: 24px;
+}
+.policy-content p,
+.policy-content li { color: var(--muted); font-size: .95rem; }
+.policy-content ul { padding-left: 22px; }
+.policy-content li { margin: 5px 0; }
+.terms-back { text-decoration: none; }
+
+.auth-submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--soft-green);
+  color: #fff;
+  font: 700 1rem 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.auth-submit:hover {
+  background: var(--soft-green-dark);
+  box-shadow: 0 6px 15px rgba(92,116,101,.2);
+  transform: translateY(-1px);
+}
+
+.auth-submit span { color: #fff; font-size: 1.2rem; }
+
+.auth-forgot {
+  margin-top: -8px;
+  text-align: right;
+  font-size: .88rem;
+}
+
+.auth-forgot a {
+  color: var(--soft-green-dark);
+  font-weight: 700;
+}
+
+.auth-forgot a:hover { color: var(--gold-dark); }
+
+.auth-switch {
+  margin: 22px 0 8px;
+  color: var(--muted);
+  text-align: center;
+  font-size: .9rem;
+}
+
+.auth-switch a { color: var(--soft-green-dark); font-weight: 700; }
+
+.auth-home-link {
+  display: block;
+  color: var(--muted);
+  text-align: center;
+  font-size: .85rem;
+}
+
+.auth-footer { padding: 18px 0; background: #e0e4e1; }
+.auth-footer .container { padding-top: 18px; padding-bottom: 18px; text-align: center; }
+.auth-footer .serif { color: var(--soft-green-dark); font-size: 1.15rem; }
+.auth-footer .gold { color: var(--gold); }
+.auth-footer .copy { margin-top: 3px; color: var(--muted); font-size: .8rem; }
+
+@media (max-width: 550px) {
+  .auth-main { padding: 26px 14px; }
+  .auth-card { padding: 28px 22px; }
+  .auth-heading h1 { font-size: 1.7rem; }
+}
