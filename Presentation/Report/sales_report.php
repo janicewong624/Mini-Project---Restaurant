@@ -24,8 +24,11 @@ include __DIR__ . '/../includes/header.php';
 include __DIR__ . '/../includes/order_head.php';
 ?>
 
-<h1 class="page-title">Sales Report</h1>
-<p class="page-sub">Revenue from payments that were received (Completed).</p>
+<div class="ob-pagehead">
+    <h1 class="page-title">Sales Report</h1>
+    <p class="page-sub">Revenue from payments that were received (Completed).</p>
+    <?php include __DIR__ . '/../includes/report_links.php'; ?>
+</div>
 
 <?php include __DIR__ . '/../includes/report_filter.php'; ?>
 

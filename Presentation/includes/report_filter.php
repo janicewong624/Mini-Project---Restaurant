@@ -1,7 +1,11 @@
 <?php
 /**
  * 報表共用的日期篩選列。
- * 需要：$range（ReportService::resolveRange 的結果）、可選 $showGroup（Sales Report 用）、$group
+ *
+ * @var Closure $e          htmlspecialchars 的簡寫（header.php 定義的）
+ * @var array   $range      ReportService::resolveRange() 的結果（from, to, errors...）
+ * @var bool    $showGroup  可選，Sales Report 才會設成 true
+ * @var string  $group      可選，'day' 或 'month'
  */
 $showGroup = $showGroup ?? false;
 $group     = $group ?? '';

@@ -18,8 +18,11 @@ include __DIR__ . '/../includes/header.php';
 include __DIR__ . '/../includes/order_head.php';
 ?>
 
-<h1 class="page-title">Orders</h1>
-<p class="page-sub">All customer orders.</p>
+<div class="ob-pagehead">
+    <h1 class="page-title">Orders</h1>
+    <p class="page-sub">All customer orders.</p>
+    <?php include __DIR__ . '/../includes/report_links.php'; ?>
+</div>
 
 <?php if ($flash): ?><div class="alert alert-success ob-alert"><?= $e($flash) ?></div><?php endif; ?>
 
