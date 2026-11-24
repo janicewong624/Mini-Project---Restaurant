@@ -12,6 +12,42 @@ document.querySelectorAll('[data-toggle-password]').forEach((button) => {
 });
 
 const registerForm = document.getElementById('register-form');
+const loginForm = document.getElementById('login-form');
+
+if (loginForm) {
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+
+    loginForm.addEventListener('submit', (event) => {
+        const errors = {
+            email: !email.value.trim()
+                ? 'Please enter your email address.'
+                : (!email.validity.valid ? 'Please enter a valid email address.' : ''),
+            password: !password.value
+                ? 'Please enter your password.'
+                : '',
+        };
+
+        let valid = true;
+        Object.entries(errors).forEach(([id, message]) => {
+            const input = document.getElementById(id);
+            const output = document.querySelector(`[data-error-for="${id}"]`);
+            output.textContent = message;
+            input.classList.toggle('auth-invalid', Boolean(message));
+            if (message) valid = false;
+        });
+
+        if (!valid) event.preventDefault();
+    });
+
+    loginForm.addEventListener('input', (event) => {
+        if (event.target.matches('input:not([type="hidden"])')) {
+            event.target.classList.remove('auth-invalid');
+            const output = document.querySelector(`[data-error-for="${event.target.id}"]`);
+            if (output) output.textContent = '';
+        }
+    });
+}
 
 if (registerForm) {
     const fields = {

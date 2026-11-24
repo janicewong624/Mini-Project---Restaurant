@@ -69,4 +69,27 @@ class AuthService {
         unset($user['password']);
         return $user;
     }
+
+    /** @return array{success:bool,error?:string,user?:array} */
+    public function authenticateWithResult(string $email, string $password): array {
+        $email = trim($email);
+
+        if ($email === '' || $password === '') {
+            return ['success' => false, 'error' => 'empty_fields'];
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'error' => 'invalid_email'];
+        }
+
+        $user = $this->users->findByEmail($email);
+        if (!$user) {
+            return ['success' => false, 'error' => 'email_not_found'];
+        }
+        if (!password_verify($password, $user['password'])) {
+            return ['success' => false, 'error' => 'wrong_password'];
+        }
+
+        unset($user['password']);
+        return ['success' => true, 'user' => $user];
+    }
 }

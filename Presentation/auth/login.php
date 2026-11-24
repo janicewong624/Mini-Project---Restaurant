@@ -17,10 +17,18 @@ $postValue = static fn(string $key): string => isset($_POST[$key]) && is_string(
 $errors = [
     'invalid_credentials' => 'The email or password is incorrect.',
     'invalid_csrf' => 'Your session expired. Please try again.',
+    'empty_fields' => 'Please enter both your email address and password.',
+    'invalid_email' => 'Please enter a valid email address.',
+    'email_not_found' => 'No account was found with this email address.',
+    'wrong_password' => 'The password is incorrect. Please try again.',
+    'database_unavailable' => 'Database is unavailable. Please start MySQL and try again.',
 ];
 $errorCode = is_string($_GET['error'] ?? null) ? $_GET['error'] : '';
 $error = $errors[$errorCode] ?? '';
 $registered = ($_GET['registered'] ?? '') === 'success';
+$loginEmail = '';
+$emailFieldError = '';
+$passwordFieldError = '';
 
 if (empty($_SESSION['auth_csrf'])) {
     $_SESSION['auth_csrf'] = bin2hex(random_bytes(32));
@@ -29,29 +37,50 @@ if (empty($_SESSION['auth_csrf'])) {
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if (!is_string($_POST['csrf_token'] ?? null)
         || !hash_equals($_SESSION['auth_csrf'], $_POST['csrf_token'])) {
-        header('Location: login.php?error=invalid_csrf');
-        exit;
+        $error = $errors['invalid_csrf'];
+    } else {
+        try {
+            require_once __DIR__ . '/../../Business/AuthService.php';
+            $service = new AuthService();
+            $result = $service->authenticateWithResult(
+                $postValue('email'),
+                $postValue('password')
+            );
+        } catch (PDOException $exception) {
+            $result = ['success' => false, 'error' => 'database_unavailable'];
+        } catch (Throwable $exception) {
+            $result = ['success' => false, 'error' => 'database_unavailable'];
+        }
+
+        if (!$result['success']) {
+            $errorCode = $result['error'];
+            $error = $errors[$errorCode] ?? $errors['invalid_credentials'];
+            $loginEmail = trim($postValue('email'));
+            if ($errorCode === 'invalid_email') {
+                $emailFieldError = $error;
+            } elseif ($errorCode === 'email_not_found') {
+                $emailFieldError = $error;
+            } elseif ($errorCode === 'wrong_password') {
+                $passwordFieldError = $error;
+            } elseif ($errorCode === 'empty_fields') {
+                if ($postValue('email') === '') {
+                    $emailFieldError = 'Please enter your email address.';
+                }
+                if ($postValue('password') === '') {
+                    $passwordFieldError = 'Please enter your password.';
+                }
+            }
+        } else {
+            $user = $result['user'];
+            session_regenerate_id(true);
+            unset($_SESSION['_dev']);
+            $_SESSION['userID'] = $user['userID'];
+            $_SESSION['name'] = $user['name'];
+            $_SESSION['role'] = $user['role'];
+            header('Location: ../../index.php');
+            exit;
+        }
     }
-
-    require_once __DIR__ . '/../../Business/AuthService.php';
-    $service = new AuthService();
-    $user = $service->authenticate(
-        $postValue('email'),
-        $postValue('password')
-    );
-
-    if (!$user) {
-        header('Location: login.php?error=invalid_credentials');
-        exit;
-    }
-
-    session_regenerate_id(true);
-    unset($_SESSION['_dev']);
-    $_SESSION['userID'] = $user['userID'];
-    $_SESSION['name'] = $user['name'];
-    $_SESSION['role'] = $user['role'];
-    header('Location: ../../index.php');
-    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -87,23 +116,26 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             <div class="alert alert-success" role="status">Your password has been reset. Please sign in.</div>
         <?php endif; ?>
 
-        <form action="login.php" method="post">
+        <form action="" method="post" id="login-form" novalidate>
             <input type="hidden" name="csrf_token" value="<?= $e($_SESSION['auth_csrf']) ?>">
 
             <div class="form-group">
                 <label class="field" for="email">Email Address</label>
-                <input class="form-control" type="email" id="email" name="email"
-                       placeholder="you@example.com" autocomplete="email" required>
+                <input class="form-control<?= $emailFieldError !== '' ? ' auth-invalid' : '' ?>" type="email" id="email" name="email"
+                       placeholder="you@example.com" autocomplete="email"
+                       value="<?= $e($loginEmail) ?>" required>
+                <small class="auth-field-error" data-error-for="email"><?= $e($emailFieldError) ?></small>
             </div>
 
             <div class="form-group">
                 <label class="field" for="password">Password</label>
                 <div class="auth-password">
-                    <input class="form-control" type="password" id="password" name="password"
+                    <input class="form-control<?= $passwordFieldError !== '' ? ' auth-invalid' : '' ?>" type="password" id="password" name="password"
                            placeholder="Enter your password" autocomplete="current-password" required>
                     <button class="auth-toggle" type="button" data-toggle-password="password"
                             aria-label="Show password" aria-pressed="false">Show</button>
                 </div>
+                <small class="auth-field-error" data-error-for="password"><?= $e($passwordFieldError) ?></small>
             </div>
 
             <p class="auth-forgot"><a href="forgot_password.php">Forgot password?</a></p>

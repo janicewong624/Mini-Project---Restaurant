@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/Business/MenuService.php';
 
 $restaurantName = 'DineNest Restaurant';
 $tagline        = 'Good food, made with heart';
@@ -7,6 +8,17 @@ $tagline        = 'Good food, made with heart';
 $role = $_SESSION['role'] ?? null;   // Customer / Administrator / null
 $name = $_SESSION['name'] ?? '';
 $e = fn($s) => htmlspecialchars($s);
+$popularDishes = [];
+try {
+    $popularDishes = (new MenuService())->getPopular();
+} catch (PDOException $error) {
+    $popularDishes = [];
+}
+
+$menuImageName = static function ($value): string {
+    $filename = basename(str_replace('\\', '/', trim((string)$value)));
+    return preg_match('/\.(jpe?g|png|webp)$/i', $filename) ? $filename : '';
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,11 +82,31 @@ $e = fn($s) => htmlspecialchars($s);
             <div class="line"></div>
         </div>
         <div class="dishes">
-            <div class="dish"><div class="dish-img">🍗</div><div class="dish-body"><h3>Chicken Rice</h3><p>Steamed rice with roasted chicken</p><span class="price">RM 12.00</span></div></div>
-            <div class="dish"><div class="dish-img">🍜</div><div class="dish-body"><h3>Curry Noodles</h3><p>Rich, spicy and comforting</p><span class="price">RM 10.00</span></div></div>
-            <div class="dish"><div class="dish-img">🍟</div><div class="dish-body"><h3>Crispy Fries</h3><p>Perfect for sharing</p><span class="price">RM 7.00</span></div></div>
-            <div class="dish"><div class="dish-img">🧋</div><div class="dish-body"><h3>Iced Milk Tea</h3><p>Cool, sweet and creamy</p><span class="price">RM 6.00</span></div></div>
+            <?php if (!$popularDishes): ?>
+                <p class="popular-empty">Our popular dishes are being selected. Please check back soon.</p>
+            <?php endif; ?>
+            <?php foreach ($popularDishes as $dish): ?>
+                <?php $imageName = $menuImageName($dish['image'] ?? ''); ?>
+                <article class="dish">
+                    <?php if ($imageName !== ''): ?>
+                        <div class="dish-img">
+                            <img src="Assets/images/menu/<?= rawurlencode($imageName) ?>"
+                                 alt="<?= $e($dish['foodName']) ?>" loading="lazy"
+                                 onerror="this.parentElement.hidden=true;">
+                        </div>
+                    <?php endif; ?>
+                    <div class="dish-body">
+                        <p class="popular-category"><?= $e($dish['category']) ?></p>
+                        <h3><?= $e($dish['foodName']) ?></h3>
+                        <p><?= $e($dish['description'] ?? '') ?></p>
+                        <span class="price">RM <?= number_format((float)$dish['price'], 2) ?></span>
+                    </div>
+                </article>
+            <?php endforeach; ?>
         </div>
+        <?php if ($role === 'Administrator'): ?>
+            <div class="popular-manage-link"><a href="presentation/menu/">Manage Popular Dishes in Menu</a></div>
+        <?php endif; ?>
     </div>
 </section>
 

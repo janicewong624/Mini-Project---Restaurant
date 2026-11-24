@@ -8,6 +8,10 @@ $items   = $service->getMenu();
 $cart    = $_SESSION['cart'] ?? [];
 $errors  = [];
 $flash   = order_flash_get();
+$menuImageName = static function ($value): string {
+    $filename = basename(str_replace('\\', '/', trim((string)$value)));
+    return preg_match('/\.(jpe?g|png|webp)$/i', $filename) ? $filename : '';
+};
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     [$cart, $errors] = $service->normalizeQuantities($_POST['qty'] ?? []);
@@ -55,6 +59,15 @@ include __DIR__ . '/../includes/order_head.php';
         <div class="ob-grid">
             <?php foreach ($list as $it): $q = (int)($cart[$it['menuItemID']] ?? 0); ?>
                 <div class="ob-card">
+                    <?php $imageName = $menuImageName($it['image'] ?? ''); ?>
+                    <?php if ($imageName !== ''): ?>
+                        <div class="ob-card-photo">
+                            <img src="<?= $base ?>Assets/images/menu/<?= rawurlencode($imageName) ?>"
+                                 alt="<?= $e($it['foodName']) ?>" loading="lazy"
+                                 onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                            <span class="ob-photo-placeholder" hidden>🍽️</span>
+                        </div>
+                    <?php endif; ?>
                     <div class="ob-card-body">
                         <h3><?= $e($it['foodName']) ?></h3>
                         <?php if (!empty($it['description'])): ?><p><?= $e($it['description']) ?></p><?php endif; ?>
