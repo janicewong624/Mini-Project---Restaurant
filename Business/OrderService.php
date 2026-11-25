@@ -57,7 +57,7 @@ class OrderService {
     public function getDetail(string $orderID, ?string $onlyUserID = null): ?array {
         $order = $this->data->findOrder($orderID);
         if (!$order) return null;
-        if ($onlyUserID !== null && $order['userID'] !== $onlyUserID) return null;
+        if ($onlyUserID !== null && (string)$order['userID'] !== $onlyUserID) return null;
         return ['order' => $order, 'items' => $this->data->findItems($orderID)];
     }
 
@@ -211,7 +211,7 @@ class OrderService {
     public function cancel(string $orderID, ?string $byUserID = null): array {
         $order = $this->data->findOrder($orderID);
         if (!$order) return $this->fail("Order not found.");
-        if ($byUserID !== null && $order['userID'] !== $byUserID) {
+        if ($byUserID !== null && (string)$order['userID'] !== $byUserID) {
             return $this->fail("You can only cancel your own orders.");
         }
         if ($order['orderStatus'] === 'Cancelled') return $this->fail("This order is already cancelled.");

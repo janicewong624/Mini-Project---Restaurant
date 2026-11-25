@@ -70,7 +70,8 @@ include __DIR__ . '/../includes/header.php';
             <div class="alert alert-error"><?= $e($error) ?></div>
         <?php endforeach; ?>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data"
+              onsubmit="return confirm('Save changes to this menu item?');">
             <input type="hidden" name="MAX_FILE_SIZE" value="5242880">
             <?php $buttonText = 'Save Changes'; include __DIR__ . '/menu_form_fields.php'; ?>
         </form>

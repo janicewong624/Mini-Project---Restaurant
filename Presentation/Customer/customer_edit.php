@@ -53,7 +53,8 @@ include __DIR__ . '/../includes/header.php';
             <div class="alert alert-error"><?= $e($error) ?></div>
         <?php endforeach; ?>
 
-        <form method="post" action="customer_edit.php?id=<?= urlencode($id) ?>">
+        <form method="post" action="customer_edit.php?id=<?= urlencode($id) ?>"
+              onsubmit="return confirm('Save changes to this customer?');">
             <input type="hidden" name="csrf_token" value="<?= $e($csrfToken) ?>">
             <div class="form-group">
                 <label class="field" for="full-name">Full Name</label>

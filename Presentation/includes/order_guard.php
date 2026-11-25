@@ -15,22 +15,26 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 // ★ 登入功能完成後一定要改成 false！
 const ORDER_DEV_MODE = true;
 
-/** 測試模式：沒登入時自動當 Customer（U0001），網址加 ?as=admin 可切換成管理員，?as=customer 切回顧客 */
+/** 測試模式：沒登入時自動當資料庫中的第一位 Customer，網址加 ?as=admin 可切換成管理員 */
 function order_dev_login(): void {
     if (!ORDER_DEV_MODE) return;
 
     $isDev = !empty($_SESSION['_dev']);
     if (!empty($_SESSION['role']) && !$isDev) return;   // 已經是真的登入，不要動
 
-    $as = $_GET['as'] ?? ($isDev ? '' : 'customer');
+    $as = $_GET['as'] ?? ($isDev && ($_SESSION['role'] ?? '') === 'Administrator' ? 'admin' : 'customer');
     if ($as === 'admin') {
         $_SESSION['userID'] = 'A0001';
         $_SESSION['name']   = 'Dev Admin';
         $_SESSION['role']   = 'Administrator';
         $_SESSION['_dev']   = true;
     } elseif ($as === 'customer') {
-        $_SESSION['userID'] = 'U0001';
-        $_SESSION['name']   = 'Dev Customer';
+        require_once __DIR__ . '/../../Data/UserData.php';
+        $customers = (new UserData())->getCustomers();
+        if (!$customers) order_deny('No customer account is available for the development login.');
+
+        $_SESSION['userID'] = (string)$customers[0]['userID'];
+        $_SESSION['name']   = $customers[0]['name'];
         $_SESSION['role']   = 'Customer';
         $_SESSION['_dev']   = true;
     }

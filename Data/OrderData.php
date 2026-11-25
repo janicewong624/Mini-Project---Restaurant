@@ -37,12 +37,13 @@ class OrderData {
     /** 顧客清單（不選 password） */
     public function getCustomers(): array {
         return $this->pdo->query(
-            "SELECT userID, name, email, contactNumber FROM user WHERE role = 'Customer' ORDER BY name"
+            "SELECT id AS userID, full_name AS name, email, phone AS contactNumber
+             FROM users WHERE role = 'customer' ORDER BY full_name"
         )->fetchAll();
     }
 
     public function userExists(string $userID): bool {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM user WHERE userID = ? AND role = 'Customer'");
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE id = ? AND role = 'customer'");
         $stmt->execute([$userID]);
         return $stmt->fetchColumn() > 0;
     }
@@ -57,11 +58,11 @@ class OrderData {
 
     private function orderSelect(): string {
         // 外送/外帶訂單沒有桌子 -> 用 LEFT JOIN，不要用 INNER JOIN
-        return "SELECT o.orderID, o.userID, u.name AS customerName, o.tableID, t.tableNumber,
+        return "SELECT o.orderID, o.userID, u.full_name AS customerName, o.tableID, t.tableNumber,
                        o.orderDate, o.orderType, o.totalAmount, o.orderStatus,
                        p.paymentID, p.paymentStatus, p.paymentMethod
                 FROM orders o
-                JOIN user u ON o.userID = u.userID
+                JOIN users u ON o.userID = u.id
                 LEFT JOIN restaurant_table t ON o.tableID = t.tableID
                 LEFT JOIN payment p ON p.orderID = o.orderID";
     }

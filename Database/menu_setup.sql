@@ -162,3 +162,68 @@ ON DUPLICATE KEY UPDATE foodName = 'Mushroom Chicken Chop', description = 'Juicy
 
 -- Menu item deleted
 DELETE FROM menuitem WHERE menuItemID = 'M0003';
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0025', 'Longan Milk', 'Creamy longan milk blended with sweet coconut and a hint of vanilla for a refreshing treat.', 11.30, 'Beverages', '6abbf4770ea68b77647a09f070564c76.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Longan Milk', description = 'Creamy longan milk blended with sweet coconut and a hint of vanilla for a refreshing treat.', price = 11.30, category = 'Beverages', image = '6abbf4770ea68b77647a09f070564c76.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0026', 'Mango Smoothie', 'A refreshing blend of ripe mangoes, creamy yogurt, and a hint of honey.', 15.70, 'Beverages', 'c14df07b0ef67307d3ba6143da01045f.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Mango Smoothie', description = 'A refreshing blend of ripe mangoes, creamy yogurt, and a hint of honey.', price = 15.70, category = 'Beverages', image = 'c14df07b0ef67307d3ba6143da01045f.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0027', 'Cappuccino', 'Rich espresso blended with velvety steamed milk, topped with a delicate foam and cocoa dust.', 9.00, 'Beverages', '229db0c01a362c8f31ffab24e6ad18ec.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Cappuccino', description = 'Rich espresso blended with velvety steamed milk, topped with a delicate foam and cocoa dust.', price = 9.00, category = 'Beverages', image = '229db0c01a362c8f31ffab24e6ad18ec.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0028', 'Grass Jelly & Lime Tea', 'Refreshing grass jelly infused with zesty lime, served chilled for a delightful, revitalizing experience.', 9.90, 'Beverages', 'e6d405d8475668b3430a521182bf631b.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Grass Jelly & Lime Tea', description = 'Refreshing grass jelly infused with zesty lime, served chilled for a delightful, revitalizing experience.', price = 9.90, category = 'Beverages', image = 'e6d405d8475668b3430a521182bf631b.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0029', 'Sea Coconut Longan', 'A refreshing blend of sea coconut and longan, served chilled for a delightful tropical treat', 11.50, 'Beverages', '2907ec624cab6f4c4af69fd9e6bc0acb.webp', 1)
+ON DUPLICATE KEY UPDATE foodName = 'Sea Coconut Longan', description = 'A refreshing blend of sea coconut and longan, served chilled for a delightful tropical treat', price = 11.50, category = 'Beverages', image = '2907ec624cab6f4c4af69fd9e6bc0acb.webp', isPopular = 1;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0030', 'Lamb Chop', 'Succulent lamb chops grilled to perfection, served with a savory herb sauce and seasonal vegetables.', 38.00, 'Western Food', 'ba1b8d4809ad853f9ff9fb180bd29352.webp', 1)
+ON DUPLICATE KEY UPDATE foodName = 'Lamb Chop', description = 'Succulent lamb chops grilled to perfection, served with a savory herb sauce and seasonal vegetables.', price = 38.00, category = 'Western Food', image = 'ba1b8d4809ad853f9ff9fb180bd29352.webp', isPopular = 1;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0031', 'Black Pepper Chicken Chop', 'Juicy chicken chop seasoned with aromatic black pepper, served with a side of vibrant vegetables.', 26.00, 'Western Food', 'bddb28fdd2539150ceed21df32eef207.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Black Pepper Chicken Chop', description = 'Juicy chicken chop seasoned with aromatic black pepper, served with a side of vibrant vegetables.', price = 26.00, category = 'Western Food', image = 'bddb28fdd2539150ceed21df32eef207.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0032', 'Dried Chili Chicken Rice', 'Savory dried chili chicken atop a bed of aromatic rice, delivering a perfect balance of heat and flavor in every bite.', 16.00, 'Rice', '4f8b01ec1a1454c3c4df526ddc1d4df0.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Dried Chili Chicken Rice', description = 'Savory dried chili chicken atop a bed of aromatic rice, delivering a perfect balance of heat and flavor in every bite.', price = 16.00, category = 'Rice', image = '4f8b01ec1a1454c3c4df526ddc1d4df0.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0033', 'JInxiang Chicken Rice', 'A savory dish featuring tender Jinxiang chicken served over a bed of perfectly cooked rice.', 16.00, 'Rice', '074baa411539c46b9108de0b1ca1c5c5.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'JInxiang Chicken Rice', description = 'A savory dish featuring tender Jinxiang chicken served over a bed of perfectly cooked rice.', price = 16.00, category = 'Rice', image = '074baa411539c46b9108de0b1ca1c5c5.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0034', 'Hometown Fried Rice', 'Savory fried rice stir-fried with fresh vegetables, eggs, and your choice of protein.', 14.50, 'Rice', '7904fb180ed09d0581e205f763e8f33f.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Hometown Fried Rice', description = 'Savory fried rice stir-fried with fresh vegetables, eggs, and your choice of protein.', price = 14.50, category = 'Rice', image = '7904fb180ed09d0581e205f763e8f33f.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0035', 'Thai Style Chicken Rice', 'Savory Thai chicken served over fragrant jasmine rice, accompanied by fresh herbs and zesty sauce.', 16.00, 'Rice', '79167a269116cadea26ff0e3e980480a.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Thai Style Chicken Rice', description = 'Savory Thai chicken served over fragrant jasmine rice, accompanied by fresh herbs and zesty sauce.', price = 16.00, category = 'Rice', image = '79167a269116cadea26ff0e3e980480a.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0036', 'Martine Chicken Rice', 'Savory chicken served over fragrant rice, accompanied by zesty sauces and fresh vegetables.', 16.00, 'Rice', 'f85102a375e0f4837e5fef712bf99e23.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Martine Chicken Rice', description = 'Savory chicken served over fragrant rice, accompanied by zesty sauces and fresh vegetables.', price = 16.00, category = 'Rice', image = 'f85102a375e0f4837e5fef712bf99e23.webp', isPopular = 0;
+
+-- Menu item added or updated
+INSERT INTO menuitem (menuItemID, foodName, description, price, category, image, isPopular)
+VALUES ('M0037', 'Nasi Lemak Kepak', 'Fragrant coconut rice served with spicy sambal, crispy chicken, boiled egg, and fresh cucumber slices.', 16.00, 'Rice', 'ba905b293a93b57b5c7fba6d79ac6c86.webp', 0)
+ON DUPLICATE KEY UPDATE foodName = 'Nasi Lemak Kepak', description = 'Fragrant coconut rice served with spicy sambal, crispy chicken, boiled egg, and fresh cucumber slices.', price = 16.00, category = 'Rice', image = 'ba905b293a93b57b5c7fba6d79ac6c86.webp', isPopular = 0;
