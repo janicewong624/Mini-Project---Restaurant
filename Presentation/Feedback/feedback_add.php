@@ -1,9 +1,11 @@
 <?php
 session_start();
+require_once __DIR__ . '/../includes/auth_check.php';
+requireRole('Customer');
 require_once __DIR__ . '/../../business/FeedbackService.php';
 
 $service = new FeedbackService();
-$userID  = $_SESSION['userID'] ?? 'U0001';   // 暫時：登入做好後會自動用 session
+$userID = $_SESSION['userID'];
 $errors  = [];
 $success = '';
 $rating  = '';
