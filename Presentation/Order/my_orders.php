@@ -115,6 +115,9 @@ include __DIR__ . '/../includes/order_head.php';
                 <?php if ($status === 'Completed' && $o['paymentStatus'] === 'Completed' && $o['paymentID']): ?>
                     <a href="../Receipt/receipt_view.php?id=<?= urlencode($o['paymentID']) ?>" class="btn btn-secondary btn-sm">View Receipt</a>
                 <?php endif; ?>
+                <?php if ($status === 'Pending' && $o['orderType'] === 'Dine-in' && ($o['paymentStatus'] ?? 'Pending') === 'Pending'): ?>
+                    <a href="../Menu/index.php" class="btn btn-gold btn-sm">Order More</a>
+                <?php endif; ?>
                 <?php if ($status === 'Pending'): ?>
                     <a href="order_cancel.php?id=<?= urlencode($id) ?>&amp;back=<?= urlencode('my_orders.php?open=' . $id) ?>" class="btn btn-danger btn-sm">Cancel Order</a>
                 <?php endif; ?>

@@ -8,6 +8,8 @@ $cart    = $_SESSION['cart'] ?? [];
 $errors  = [];
 $type    = '';
 $tableNo = '';
+$myOrders = $service->getMyOpenOrders($user['userID']);
+$existing = $myOrders ? $myOrders[0]['orderID'] : '';   // 有進行中的訂單 -> 預設「加點到原訂單」
 
 if (!$cart) {
     order_flash_set("Your order is empty. Please choose some food first.", 'error');
@@ -16,13 +18,21 @@ if (!$cart) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $type    = $_POST['orderType'] ?? '';
-    $tableNo = $_POST['tableNumber'] ?? '';
-    $result  = $service->place($user['userID'], $cart, $type, $tableNo);
+    $type     = $_POST['orderType'] ?? '';
+    $tableNo  = $_POST['tableNumber'] ?? '';
+    $existing = $myOrders ? (string)($_POST['existingOrder'] ?? '') : '';
+
+    if ($existing !== '') {
+        $result = $service->addToOrder($existing, $user['userID'], $cart);
+        $msg    = "Added to your order " . $existing . ". You will pay once for the whole order.";
+    } else {
+        $result = $service->place($user['userID'], $cart, $type, $tableNo);
+        $msg    = "Thank you! Your order " . ($result['id'] ?? '') . " has been placed.";
+    }
 
     if ($result['success']) {
         unset($_SESSION['cart']);
-        order_flash_set("Thank you! Your order " . $result['id'] . " has been placed.");
+        order_flash_set($msg);
         header("Location: my_orders.php?open=" . urlencode($result['id']));
         exit;
     }
@@ -32,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 [$lines, $total, $lineErrors] = $service->buildLines($cart);
 $errors = array_merge($errors, $lineErrors);
 $available = $service->getAvailableTableNumbers();
+$myTables  = $service->getMyActiveTables($user['userID']);
+if ($tableNo === '' && count($myTables) === 1) $tableNo = $myTables[0];   // 加點餐：預設沿用自己的桌子
 
 $pageTitle = 'Dine-in or Takeaway';
 $bodyClass = 'feedback-page order-page';
@@ -60,6 +72,23 @@ include __DIR__ . '/../includes/order_head.php';
     </div>
 
     <form method="post">
+        <?php if ($myOrders): ?>
+        <p class="ob-hint" style="margin-bottom:8px;">You already have an order in progress. Add these items to it so you only pay once.</p>
+        <div class="ob-choice" style="margin-bottom:16px;">
+            <?php foreach ($myOrders as $mo): ?>
+            <label class="ob-choice-card">
+                <input type="radio" name="existingOrder" value="<?= $e($mo['orderID']) ?>" <?= $existing === $mo['orderID'] ? 'checked' : '' ?>>
+                <span><strong>Add to Order <?= $e($mo['orderID']) ?></strong><small>Table <?= $e($mo['tableNumber']) ?> · currently RM <?= number_format((float)$mo['totalAmount'], 2) ?></small></span>
+            </label>
+            <?php endforeach; ?>
+            <label class="ob-choice-card">
+                <input type="radio" name="existingOrder" value="" <?= $existing === '' ? 'checked' : '' ?>>
+                <span><strong>New separate order</strong><small>Paid separately</small></span>
+            </label>
+        </div>
+        <?php endif; ?>
+
+        <div id="newOrderBox">
         <div class="ob-choice">
             <label class="ob-choice-card">
                 <input type="radio" name="orderType" value="Dine-in" <?= $type === 'Dine-in' ? 'checked' : '' ?>>
@@ -75,12 +104,17 @@ include __DIR__ . '/../includes/order_head.php';
             <label class="field" for="tableNumber">Table Number</label>
             <input type="text" id="tableNumber" name="tableNumber" class="form-control" maxlength="10"
                    value="<?= $e($tableNo) ?>" placeholder="Enter your table number">
+            <?php if ($myTables): ?>
+                <small class="ob-hint">Your current table: <?= $e(implode(', ', $myTables)) ?> (you can keep ordering here).</small><br>
+            <?php endif; ?>
             <?php if ($available): ?>
                 <small class="ob-hint">Available tables: <?= $e(implode(', ', $available)) ?></small>
             <?php else: ?>
                 <small class="ob-hint">All tables are taken right now. Please ask our staff, or choose Takeaway.</small>
             <?php endif; ?>
         </div>
+
+        </div><!-- /newOrderBox -->
 
         <button type="submit" class="btn btn-gold btn-sm">Confirm Order</button>
         <a href="order_summary.php" class="btn btn-secondary btn-sm">Back</a>
@@ -94,8 +128,16 @@ function toggleTable() {
     const dine = document.querySelector('input[name="orderType"][value="Dine-in"]').checked;
     tableBox.style.display = dine ? 'block' : 'none';
 }
+// 選了「加點到原訂單」就不用再選內用/外帶和桌號
+const newBox = document.getElementById('newOrderBox');
+function toggleNew() {
+    const ex = document.querySelector('input[name="existingOrder"]:checked');
+    newBox.style.display = (ex && ex.value !== '') ? 'none' : 'block';
+}
 radios.forEach(r => r.addEventListener('change', toggleTable));
+document.querySelectorAll('input[name="existingOrder"]').forEach(r => r.addEventListener('change', toggleNew));
 toggleTable();
+toggleNew();
 </script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

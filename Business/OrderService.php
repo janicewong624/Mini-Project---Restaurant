@@ -29,6 +29,11 @@ class OrderService {
         return $out;
     }
 
+    /** 這位顧客目前正在用的桌號（還有 Pending 內用訂單） */
+    public function getMyActiveTables(string $userID): array { return $this->data->findMyActiveTableNumbers($userID); }
+
+    public function getMyOpenOrders(string $userID): array { return $this->data->findMyOpenDineInOrders($userID); }
+
     public function getByUser(string $userID): array   { return $this->data->findByUser($userID); }
 
     /** admin 訂單列表的篩選（狀態 / 方式 / 日期範圍），不合法的條件直接忽略 */
@@ -125,7 +130,7 @@ class OrderService {
      * @param array|null $current 修改訂單時傳入原本的訂單（原本的桌子不算被佔用）
      * @return array{0:string[],1:array,2:float,3:?string} [errors, lines, total, tableID]
      */
-    private function prepare(array $cart, string $type, string $tableNumber, ?array $current = null): array {
+    private function prepare(array $cart, string $type, string $tableNumber, ?array $current = null, ?string $userID = null): array {
         [$lines, $total, $errors] = $this->buildLines($cart);
 
         if (!in_array($type, self::TYPES, true)) {
@@ -144,7 +149,11 @@ class OrderService {
                     $errors[] = "Table $tableNumber does not exist.";
                 } else {
                     $sameAsBefore = $current !== null && $current['tableID'] === $t['tableID'];
-                    if (!$sameAsBefore && $t['tableStatus'] !== 'Available') {
+                    // 同一位顧客加點餐：桌子雖然是 Occupied，但只有他自己在用，就允許沿用
+                    $myOwnTable = $userID !== null
+                        && $t['tableStatus'] === 'Occupied'
+                        && !$this->data->tableInUseByOthers($t['tableID'], $userID);
+                    if (!$sameAsBefore && !$myOwnTable && $t['tableStatus'] !== 'Available') {
                         $errors[] = "Table $tableNumber is currently {$t['tableStatus']}. Please choose another table.";
                     } else {
                         $tableID = $t['tableID'];
@@ -158,7 +167,7 @@ class OrderService {
     public function place(string $userID, array $cart, string $type, string $tableNumber): array {
         if (!$this->data->userExists($userID)) return $this->fail("Customer does not exist.");
 
-        [$errors, $lines, $total, $tableID] = $this->prepare($cart, $type, $tableNumber);
+        [$errors, $lines, $total, $tableID] = $this->prepare($cart, $type, $tableNumber, null, $userID);
         if ($errors) return ['success' => false, 'errors' => $errors];
 
         try {
@@ -177,6 +186,58 @@ class OrderService {
         return ['success' => true, 'errors' => [], 'id' => $orderID];
     }
 
+    /**
+     * 顧客加點餐：把新的菜合併進「自己進行中、還沒付款」的訂單。
+     * 同一道菜 -> 數量相加（沿用原本的單價）；新的菜 -> 新增一行。
+     * 總額和 Pending 付款金額一起更新，所以結帳時還是只有一張帳單。
+     */
+    public function addToOrder(string $orderID, string $userID, array $cart): array {
+        $order = $this->data->findOrder($orderID);
+        if (!$order || (string)$order['userID'] !== $userID) return $this->fail("Order not found.");
+        if ($order['orderStatus'] !== 'Pending' || ($order['paymentStatus'] ?? '') === 'Completed') {
+            return $this->fail("This order is already paid or closed, so items can no longer be added. Please start a new order.");
+        }
+
+        [$lines, , $errors] = $this->buildLines($cart);
+        if ($errors) return ['success' => false, 'errors' => $errors];
+
+        $existing = [];
+        foreach ($this->data->findItems($orderID) as $it) $existing[(string)$it['menuItemID']] = $it;
+        foreach ($lines as $l) {
+            $key = (string)$l['menuItemID'];
+            if (isset($existing[$key]) && (int)$existing[$key]['quantity'] + $l['quantity'] > self::MAX_QTY) {
+                return $this->fail("You can order at most " . self::MAX_QTY . " of each item ({$l['foodName']}).");
+            }
+        }
+
+        try {
+            $this->data->begin();
+            foreach ($lines as $l) {
+                $key = (string)$l['menuItemID'];
+                if (isset($existing[$key])) {
+                    $newQty = (int)$existing[$key]['quantity'] + $l['quantity'];
+                    $this->data->updateItemQuantity(
+                        $existing[$key]['orderItemID'], $newQty,
+                        round((float)$existing[$key]['unitPrice'] * $newQty, 2)
+                    );
+                } else {
+                    $this->data->insertItem($orderID, $l['menuItemID'], $l['quantity'], $l['unitPrice'], $l['subtotal']);
+                }
+            }
+            $newTotal = 0.0;
+            foreach ($this->data->findItems($orderID) as $it) $newTotal += (float)$it['subtotal'];
+            $newTotal = round($newTotal, 2);
+
+            $this->data->updateOrder($orderID, $order['tableID'], $order['orderType'], $newTotal);
+            $this->data->updatePendingPaymentAmount($orderID, $newTotal);
+            $this->data->commit();
+        } catch (Throwable $ex) {
+            $this->data->rollBack();
+            return $this->fail("Could not add the items, nothing was changed. Please try again.");
+        }
+        return ['success' => true, 'errors' => [], 'id' => $orderID];
+    }
+
     /** 修改訂單（只有 Pending 的訂單可以改）：重算明細、總額、桌子，並同步 Pending 付款的金額 */
     public function update(string $orderID, array $cart, string $type, string $tableNumber): array {
         $order = $this->data->findOrder($orderID);
@@ -185,7 +246,7 @@ class OrderService {
             return $this->fail("Only Pending orders can be edited. This order is {$order['orderStatus']}.");
         }
 
-        [$errors, $lines, $total, $tableID] = $this->prepare($cart, $type, $tableNumber, $order);
+        [$errors, $lines, $total, $tableID] = $this->prepare($cart, $type, $tableNumber, $order, (string)$order['userID']);
         if ($errors) return ['success' => false, 'errors' => $errors];
 
         try {

@@ -54,6 +54,47 @@ class OrderData {
         return $stmt->fetch() ?: null;
     }
 
+    /** 這張桌子上有沒有「別的顧客」進行中的內用訂單 */
+    public function tableInUseByOthers(string $tableID, string $userID): bool {
+        $stmt = $this->pdo->prepare(
+            "SELECT COUNT(*) FROM orders
+             WHERE tableID = ? AND orderType = 'Dine-in' AND orderStatus = 'Pending' AND userID <> ?"
+        );
+        $stmt->execute([$tableID, $userID]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+    /** 這位顧客目前進行中的內用桌號（用來讓他加點餐時直接沿用同一桌） */
+    public function findMyActiveTableNumbers(string $userID): array {
+        $stmt = $this->pdo->prepare(
+            "SELECT DISTINCT t.tableNumber
+             FROM orders o JOIN restaurant_table t ON o.tableID = t.tableID
+             WHERE o.userID = ? AND o.orderType = 'Dine-in' AND o.orderStatus = 'Pending'"
+        );
+        $stmt->execute([$userID]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    /** 這位顧客「進行中、還沒付款」的內用訂單（可以往裡面加點餐） */
+    public function findMyOpenDineInOrders(string $userID): array {
+        $stmt = $this->pdo->prepare(
+            "SELECT o.orderID, o.totalAmount, t.tableNumber
+             FROM orders o
+             JOIN restaurant_table t ON o.tableID = t.tableID
+             LEFT JOIN payment p ON p.orderID = o.orderID
+             WHERE o.userID = ? AND o.orderType = 'Dine-in' AND o.orderStatus = 'Pending'
+               AND (p.paymentStatus IS NULL OR p.paymentStatus = 'Pending')
+             ORDER BY o.orderDate, o.orderID"
+        );
+        $stmt->execute([$userID]);
+        return $stmt->fetchAll();
+    }
+
+    public function updateItemQuantity(string $orderItemID, int $qty, float $subtotal): void {
+        $stmt = $this->pdo->prepare("UPDATE orderitem SET quantity = ?, subtotal = ? WHERE orderItemID = ?");
+        $stmt->execute([$qty, $subtotal, $orderItemID]);
+    }
+
     // ---------- 訂單 ----------
 
     private function orderSelect(): string {
