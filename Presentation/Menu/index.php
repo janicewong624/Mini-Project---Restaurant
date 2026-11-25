@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../../Business/MenuService.php';
 
 $isAdmin    = ($_SESSION['role'] ?? '') === 'Administrator';
+$csrfToken  = '';
 $isCustomer = ($_SESSION['role'] ?? '') === 'Customer';   // 顧客直接在 Menu 頁面選餐下單
 $cart       = [];
 $orderFlash = '';
