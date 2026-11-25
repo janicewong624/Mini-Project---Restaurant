@@ -2,6 +2,9 @@
 /**
  * admin 新增 / 修改訂單共用的表單欄位：用餐方式、桌號、菜單數量。
  * 需要：$type, $tableNo, $menu（菜單陣列）, $qty（[menuItemID => 數量]）
+ * @var Closure     $e  
+ * @var array       $menu
+ * @var string      $type
  */
 ?>
 <div class="form-group">

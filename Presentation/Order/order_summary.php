@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['cart'] = $cart = $newCart;
 
         if (($_POST['action'] ?? '') === 'order') {
-            header("Location: order_type.php");      // 按 Order -> 選 Dine-in / Takeaway
+            header("Location: order_type.php");   
             exit;
         }
         $notice = "Your order has been updated.";

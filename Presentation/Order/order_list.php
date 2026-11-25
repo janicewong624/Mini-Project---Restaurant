@@ -10,7 +10,7 @@ $fFrom   = $_GET['from'] ?? '';
 $fTo     = $_GET['to'] ?? '';
 $orders  = $service->search(['status' => $fStatus, 'type' => $fType, 'from' => $fFrom, 'to' => $fTo]);
 $flash   = order_flash_get();
-$here    = basename($_SERVER['SCRIPT_NAME']) . ($_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '');   // 目前這一頁（含篩選），給 Back 用
+$here    = basename($_SERVER['SCRIPT_NAME']) . ($_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '');  
 
 $pageTitle = 'Orders';
 $bodyClass = 'feedback-page order-page list-page';

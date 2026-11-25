@@ -14,7 +14,7 @@ $order    = $detail['order'];
 $editable = $order['orderStatus'] === 'Pending';
 $menu     = $service->getMenu();
 $errors   = [];
-$back     = order_back_url('order_list.php');   // 從哪裡進來就回哪裡
+$back     = order_back_url('order_list.php');  
 
 $type    = $order['orderType'];
 $tableNo = (string)($order['tableNumber'] ?? '');

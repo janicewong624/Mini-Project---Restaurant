@@ -23,7 +23,7 @@ $o     = $detail['order'];
 $items = $detail['items'];
 $status = $o['orderStatus'];
 $backUrl = order_back_url('order_list.php');
-$here    = 'order_view.php?id=' . urlencode($id) . '&back=' . urlencode($backUrl);   // Edit 的 Back 要回到這一頁
+$here    = 'order_view.php?id=' . urlencode($id) . '&back=' . urlencode($backUrl);  
 
 $pageTitle = 'Order ' . $o['orderID'];
 $bodyClass = 'feedback-page order-page list-page';
