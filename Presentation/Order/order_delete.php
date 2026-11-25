@@ -7,6 +7,7 @@ $service = new OrderService();
 $id      = $_GET['id'] ?? $_POST['id'] ?? '';
 $detail  = $service->getDetail($id);
 $error   = '';
+$back    = order_back_url('order_list.php');
 
 if ($detail === null) {
     exit("Order not found. <a href='order_list.php'>Back</a>");
@@ -17,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $service->delete($id);
     if ($result['success']) {
         order_flash_set("Order $id has been deleted.");
-        header("Location: order_list.php");
+        header("Location: " . $back);
         exit;
     }
     $error = implode(' ', $result['errors']);
@@ -43,8 +44,9 @@ include __DIR__ . '/../includes/order_head.php';
 
     <form method="post">
         <input type="hidden" name="id" value="<?= $e($id) ?>">
+        <input type="hidden" name="back" value="<?= $e($back) ?>">
         <button type="submit" class="btn btn-gold btn-sm" style="background:#c0504d;">Yes, delete</button>
-        <a href="order_view.php?id=<?= urlencode($id) ?>" class="btn btn-secondary btn-sm">Cancel</a>
+        <a href="<?= $e($back) ?>" class="btn btn-secondary btn-sm">Cancel</a>
     </form>
 </div>
 

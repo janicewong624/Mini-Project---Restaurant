@@ -8,7 +8,7 @@ $service = new OrderService();
 $id      = $_GET['id'] ?? $_POST['id'] ?? '';
 $detail  = $service->getDetail($id, $isAdmin ? null : $user['userID']);
 $error   = '';
-$backUrl = $isAdmin ? 'order_list.php' : 'my_orders.php';
+$backUrl = order_back_url($isAdmin ? 'order_list.php' : 'my_orders.php');
 
 if ($detail === null) {
     exit("Order not found. <a href='$backUrl'>Back</a>");
@@ -47,8 +47,9 @@ include __DIR__ . '/../includes/order_head.php';
 
     <form method="post">
         <input type="hidden" name="id" value="<?= $e($id) ?>">
+        <input type="hidden" name="back" value="<?= $e($backUrl) ?>">
         <button type="submit" class="btn btn-gold btn-sm" style="background:#c0504d;">Yes, cancel order</button>
-        <a href="order_view.php?id=<?= urlencode($id) ?>" class="btn btn-secondary btn-sm">Back</a>
+        <a href="<?= $e($backUrl) ?>" class="btn btn-secondary btn-sm">Back</a>
     </form>
 </div>
 

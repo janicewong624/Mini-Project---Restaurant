@@ -232,6 +232,35 @@ class OrderService {
         return ['success' => true, 'errors' => []];
     }
 
+    /**
+     * admin 直接改訂單狀態。訂單狀態和付款是分開的：送完餐就可以標 Completed，不一定要先收款。
+     * 只有一種情況不能改：已經有「已收款」的付款紀錄，要先到 Payments 取消付款。
+     */
+    public function changeStatus(string $orderID, string $to): array {
+        $order = $this->data->findOrder($orderID);
+        if (!$order) return $this->fail("Order not found.");
+        if (!in_array($to, self::STATUSES, true)) return $this->fail("Invalid status.");
+
+        $from = $order['orderStatus'];
+        if ($from === $to) return ['success' => true, 'errors' => []];
+        if ($from === 'Cancelled') return $this->fail("Order $orderID is cancelled and can no longer be changed.");
+        if (($order['paymentStatus'] ?? '') === 'Completed') {
+            return $this->fail("Order $orderID already has a recorded payment. Cancel the payment on the Payments page first, then change the status.");
+        }
+
+        try {
+            $this->data->begin();
+            $this->data->setStatus($orderID, $to);
+            if ($to === 'Cancelled') $this->data->cancelPendingPayment($orderID);
+            $this->tables->syncStatuses();
+            $this->data->commit();
+        } catch (Throwable $ex) {
+            $this->data->rollBack();
+            return $this->fail("Could not change the status. Please try again.");
+        }
+        return ['success' => true, 'errors' => []];
+    }
+
     /** 永久刪除（admin）：已付款或已有收據的訂單不能刪，請用取消 */
     public function delete(string $orderID): array {
         $order = $this->data->findOrder($orderID);

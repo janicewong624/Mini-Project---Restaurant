@@ -75,10 +75,23 @@ function guard_admin(): array {
     return $u;
 }
 
-/** 一次性提示訊息（用 order_flash，避免跟 Member A 的 flash 混在一起） */
-function order_flash_set(string $msg): void { $_SESSION['order_flash'] = $msg; }
+/** 一次性提示訊息（用 order_flash，避免跟 Member A 的 flash 混在一起）。$kind = 'success' 或 'error' */
+function order_flash_set(string $msg, string $kind = 'success'): void {
+    $_SESSION['order_flash'] = $msg;
+    $_SESSION['order_flash_kind'] = $kind;
+}
 function order_flash_get(): string {
     $m = $_SESSION['order_flash'] ?? '';
-    unset($_SESSION['order_flash']);
+    $GLOBALS['order_flash_kind'] = $_SESSION['order_flash_kind'] ?? 'success';   // flash_modal.php 用來決定圖示顏色
+    unset($_SESSION['order_flash'], $_SESSION['order_flash_kind']);
     return $m;
+}
+
+/**
+ * 「Back」要回去的頁面。從哪裡進來，Back 就回哪裡（含篩選條件）。
+ * 只接受同一個資料夾內的相對網址（例如 order_list.php?status=Pending），避免被拿來跳去別的網站。
+ */
+function order_back_url(string $default = 'order_list.php'): string {
+    $b = (string)($_POST['back'] ?? $_GET['back'] ?? '');
+    return preg_match('/^[A-Za-z0-9_]+\.php(\?[A-Za-z0-9_=&%.+\-]*)?$/', $b) ? $b : $default;
 }

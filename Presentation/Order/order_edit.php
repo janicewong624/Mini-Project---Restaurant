@@ -14,6 +14,7 @@ $order    = $detail['order'];
 $editable = $order['orderStatus'] === 'Pending';
 $menu     = $service->getMenu();
 $errors   = [];
+$back     = order_back_url('order_list.php');   // 從哪裡進來就回哪裡
 
 $type    = $order['orderType'];
 $tableNo = (string)($order['tableNumber'] ?? '');
@@ -29,7 +30,7 @@ if ($editable && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $service->update($id, $qty, $type, $tableNo);
         if ($result['success']) {
             order_flash_set("Order $id has been updated.");
-            header("Location: order_view.php?id=" . urlencode($id));
+            header("Location: " . $back);
             exit;
         }
         $errors = $result['errors'];
@@ -51,7 +52,7 @@ include __DIR__ . '/../includes/order_head.php';
     <div class="alert alert-error">
         Only Pending orders can be edited. This order is <?= $e($order['orderStatus']) ?>.
     </div>
-    <a href="order_view.php?id=<?= urlencode($id) ?>" class="btn btn-secondary btn-sm">Back</a>
+    <a href="<?= $e($back) ?>" class="btn btn-secondary btn-sm">Back</a>
 <?php else: ?>
     <?php foreach ($errors as $err): ?>
         <div class="alert alert-error"><?= $e($err) ?></div>
@@ -59,11 +60,12 @@ include __DIR__ . '/../includes/order_head.php';
 
     <form method="post" class="ob-form">
         <input type="hidden" name="id" value="<?= $e($id) ?>">
+        <input type="hidden" name="back" value="<?= $e($back) ?>">
 
         <?php include __DIR__ . '/../includes/order_form_fields.php'; ?>
 
         <button type="submit" class="btn btn-gold btn-sm">Save Changes</button>
-        <a href="order_view.php?id=<?= urlencode($id) ?>" class="btn btn-secondary btn-sm">Back</a>
+        <a href="<?= $e($back) ?>" class="btn btn-secondary btn-sm">Back</a>
     </form>
 <?php endif; ?>
 </div>

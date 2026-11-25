@@ -10,8 +10,8 @@ $type    = '';
 $tableNo = '';
 
 if (!$cart) {
-    order_flash_set("Your order is empty. Please choose some food first.");
-    header("Location: order_menu.php");
+    order_flash_set("Your order is empty. Please choose some food first.", 'error');
+    header("Location: ../Menu/index.php");
     exit;
 }
 
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result['success']) {
         unset($_SESSION['cart']);
         order_flash_set("Thank you! Your order " . $result['id'] . " has been placed.");
-        header("Location: order_view.php?id=" . urlencode($result['id']));
+        header("Location: my_orders.php?open=" . urlencode($result['id']));
         exit;
     }
     $errors = $result['errors'];
@@ -44,7 +44,7 @@ include __DIR__ . '/../includes/order_head.php';
 <p class="page-sub">Tell us how you would like to enjoy your meal.</p>
 
 <div class="ob-steps no-print">
-    <span class="done">1. Choose food</span><span class="done">2. Order summary</span><span class="active">3. Dine-in / Takeaway</span><span>4. Track status</span>
+    <a class="done" href="../Menu/index.php">1. Choose food</a><a class="done" href="order_summary.php">2. Order summary</a><span class="active">3. Dine-in / Takeaway</span><span>4. Track in My Orders</span>
 </div>
 
 <div class="panel">

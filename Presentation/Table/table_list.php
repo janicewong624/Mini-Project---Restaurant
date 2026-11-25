@@ -17,7 +17,7 @@ include __DIR__ . '/../includes/order_head.php';
 <h1 class="page-title">Tables</h1>
 <p class="page-sub">Manage the restaurant tables.</p>
 
-<?php if ($flash): ?><div class="alert alert-success"><?= $e($flash) ?></div><?php endif; ?>
+<?php $modalMsg = $flash; include __DIR__ . '/../includes/flash_modal.php'; ?>
 
 <p style="margin-bottom:14px;"><a href="table_add.php" class="btn btn-gold btn-sm">+ Add Table</a></p>
 

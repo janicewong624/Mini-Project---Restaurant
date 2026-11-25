@@ -47,6 +47,12 @@ a { color: inherit; text-decoration: none; }
   border-bottom: 2px solid transparent; transition: .2s;
 }
 .nav-links a:hover { color: var(--gold-dark); border-bottom-color: var(--gold); }
+/* 目前所在的頁面：文字變深 + 金色底線 + 淡淡的底色 */
+.nav-links a.active {
+  color: var(--soft-green-dark); border-bottom-color: var(--gold);
+  background: rgba(212,169,79,.14); border-radius: 4px 4px 0 0;
+}
+.nav-links a.active:hover { color: var(--gold-dark); }
 .nav-links .btn-nav {
   background: var(--gold); color: var(--paper); border-radius: 4px;
   margin-left: 10px; font-weight: 700; border-bottom: none;
@@ -203,24 +209,31 @@ footer .copy { margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(1
   flex-direction: column;
 }
 
-.inner-page .navbar { position: relative; }
+/* 內頁導覽列固定在最上面，往下滑時不會消失 */
+.inner-page .navbar { position: sticky; top: 0; z-index: 50; }
+@media (max-width: 820px) { .inner-page .navbar { position: relative; } }   /* 手機導覽列會換行變很高，不固定 */
 
 .page-main { padding: 50px 0 70px; min-height: 70vh; }
 .inner-page .page-main { flex: 1; min-height: 0; }
 .page-title { font-family: 'Playfair Display', serif; color: var(--soft-green-dark); font-size: 2rem; margin-bottom: 6px; }
 .page-sub { color: var(--muted); margin-bottom: 26px; }
 
-.inner-page footer { padding: 20px 0 !important; }
+/* 頁尾固定在畫面最下面（像 navbar 一樣不會被滑走），而且比較矮 */
+.inner-page footer {
+  padding: 7px 0 !important; position: sticky; bottom: 0; z-index: 40;
+  box-shadow: 0 -2px 10px rgba(0,0,0,.08);
+}
 .inner-page footer .container {
   display: flex; align-items: center; justify-content: center;
-  gap: 18px; flex-wrap: wrap;
+  gap: 14px; flex-wrap: wrap;
 }
-.inner-page footer .serif { font-size: 1.25rem !important; margin: 0; }
+.inner-page footer .serif { font-size: 1rem !important; margin: 0; line-height: 1.4; }
 .inner-page footer p,
 .inner-page footer .copy {
   margin: 0 !important; padding: 0 !important;
-  border-top: none !important; font-size: .9rem !important;
+  border-top: none !important; font-size: .78rem !important; line-height: 1.4;
 }
+@media (max-width: 820px) { .inner-page footer { position: relative; } }   /* 手機不固定，才不會擋住內容 */
 
 .panel {
   background: var(--paper); border-radius: 10px; padding: 30px;

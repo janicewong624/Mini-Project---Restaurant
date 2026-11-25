@@ -3,7 +3,16 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 require_once __DIR__ . '/../../Business/MenuService.php';
 
-$isAdmin = ($_SESSION['role'] ?? '') === 'Administrator';
+$isAdmin    = ($_SESSION['role'] ?? '') === 'Administrator';
+$isCustomer = ($_SESSION['role'] ?? '') === 'Customer';   // 顧客直接在 Menu 頁面選餐下單
+$cart       = [];
+$orderFlash = '';
+if ($isCustomer) {
+    require_once __DIR__ . '/../includes/order_guard.php';
+    require_once __DIR__ . '/../../Business/OrderService.php';
+    $cart       = $_SESSION['cart'] ?? [];
+    $orderFlash = order_flash_get();
+}
 if ($isAdmin) {
     require_once __DIR__ . '/../includes/customer_admin_guard.php';
     $csrfToken = customer_admin_csrf_token();
@@ -65,6 +74,7 @@ foreach ($displayCategories as $index => $category) {
 $pageTitle = 'Menu';
 $bodyClass = 'menu-page';
 include __DIR__ . '/../includes/header.php';
+if ($isCustomer) include __DIR__ . '/../includes/order_head.php';   // 載入 order.css（數量加減、下方小計列）
 ?>
 
 <section class="menu-hero">
@@ -101,6 +111,7 @@ include __DIR__ . '/../includes/header.php';
         <?php if ($flash !== ''): ?>
             <div class="alert alert-success menu-alert"><?= $e($flash) ?></div>
         <?php endif; ?>
+        <?php $modalMsg = $orderFlash; if ($isCustomer) include __DIR__ . '/../includes/flash_modal.php'; ?>
         <?php if ($adminError !== ''): ?>
             <div class="alert alert-error menu-alert"><?= $e($adminError) ?></div>
         <?php endif; ?>
@@ -125,6 +136,7 @@ include __DIR__ . '/../includes/header.php';
             </span>
         </nav>
 
+        <?php if ($isCustomer): ?><form method="post" action="../Order/order_menu.php" id="menuOrderForm"><?php endif; ?>
         <div class="menu-category-stage" id="menu-category-stage" tabindex="0"
              aria-label="Menu categories. Swipe horizontally or use the arrow buttons to browse.">
         <?php foreach ($displayCategories as $index => $category): ?>
@@ -167,6 +179,16 @@ include __DIR__ . '/../includes/header.php';
                                     <span>RM</span>
                                     <strong><?= number_format((float)$item['price'], 2) ?></strong>
                                 </div>
+                                <?php if ($isCustomer): $q = (int)($cart[$item['menuItemID']] ?? 0); ?>
+                                    <div class="menu-card-order">
+                                        <div class="qty-stepper small" data-price="<?= $e($item['price']) ?>">
+                                            <button type="button" class="qty-minus" aria-label="Less">−</button>
+                                            <input type="number" name="qty[<?= $e($item['menuItemID']) ?>]" value="<?= $q ?>"
+                                                   min="0" max="<?= OrderService::MAX_QTY ?>" aria-label="Quantity of <?= $e($item['foodName']) ?>">
+                                            <button type="button" class="qty-plus" aria-label="More">+</button>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                                 <?php if ($isAdmin): ?>
                                     <div class="menu-card-actions">
                                         <a href="menu_edit.php?id=<?= rawurlencode((string)$item['menuItemID']) ?>">Edit</a>
@@ -191,6 +213,14 @@ include __DIR__ . '/../includes/header.php';
 
         <p class="menu-no-results" id="menu-no-results" hidden>No menu items match your search.</p>
         </div>
+
+        <?php if ($isCustomer): ?>
+            <div class="ob-total-bar">
+                <div><span id="totalCount">0</span> item(s) · <strong>RM <span id="totalAmount">0.00</span></strong></div>
+                <button type="submit" class="btn btn-gold btn-sm">Review Order</button>
+            </div>
+        </form>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -283,6 +313,7 @@ menuSearch.addEventListener('input', () => {
 });
 
 categoryStage.addEventListener('keydown', (event) => {
+    if (event.target.tagName === 'INPUT') return;   // 在數量欄位裡用左右鍵不要換分類
     if (event.key === 'ArrowLeft') {
         moveCategory(-1);
     } else if (event.key === 'ArrowRight') {
@@ -309,5 +340,29 @@ categoryStage.addEventListener('touchend', (event) => {
 
 showCategory(activeCategoryIndex, false);
 </script>
+
+<?php if ($isCustomer): ?>
+<script>
+// 顧客選餐：數量加減 + 下方小計列
+const steppers = document.querySelectorAll('.qty-stepper');
+const MAX_QTY = <?= OrderService::MAX_QTY ?>;
+function recalc() {
+    let count = 0, amount = 0;
+    steppers.forEach(s => {
+        const q = parseInt(s.querySelector('input').value, 10) || 0;
+        count += q; amount += q * parseFloat(s.dataset.price);
+    });
+    document.getElementById('totalCount').textContent = count;
+    document.getElementById('totalAmount').textContent = amount.toFixed(2);
+}
+steppers.forEach(s => {
+    const input = s.querySelector('input');
+    s.querySelector('.qty-minus').addEventListener('click', () => { input.value = Math.max(0, (parseInt(input.value, 10) || 0) - 1); recalc(); });
+    s.querySelector('.qty-plus').addEventListener('click',  () => { input.value = Math.min(MAX_QTY, (parseInt(input.value, 10) || 0) + 1); recalc(); });
+    input.addEventListener('input', recalc);
+});
+recalc();
+</script>
+<?php endif; ?>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

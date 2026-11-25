@@ -4,20 +4,26 @@ $user = guard_any();
 require_once __DIR__ . '/../../Business/OrderService.php';
 
 $isAdmin = $user['role'] === 'Administrator';
-$service = new OrderService();
 $id      = $_GET['id'] ?? '';
+// 顧客的訂單詳情現在是 My Orders 裡面展開的那一列，不再有獨立頁面
+if (!$isAdmin) {
+    header('Location: my_orders.php?open=' . urlencode($id));
+    exit;
+}
+$service = new OrderService();
 // 顧客只能看自己的訂單；admin 可以看全部
 $detail  = $service->getDetail($id, $isAdmin ? null : $user['userID']);
 $flash   = order_flash_get();
 
 if ($detail === null) {
-    $back = $isAdmin ? 'order_list.php' : 'my_orders.php';
+    $back = 'order_list.php';
     exit("Order not found. <a href='$back'>Back</a>");
 }
 $o     = $detail['order'];
 $items = $detail['items'];
 $status = $o['orderStatus'];
-$backUrl = $isAdmin ? 'order_list.php' : 'my_orders.php';
+$backUrl = order_back_url('order_list.php');
+$here    = 'order_view.php?id=' . urlencode($id) . '&back=' . urlencode($backUrl);   // Edit 的 Back 要回到這一頁
 
 $pageTitle = 'Order ' . $o['orderID'];
 $bodyClass = 'feedback-page order-page list-page';
@@ -29,7 +35,7 @@ include __DIR__ . '/../includes/order_head.php';
 <h1 class="page-title">Order <?= $e($o['orderID']) ?></h1>
 <p class="page-sub"><?= $isAdmin ? 'Order details.' : 'Track the status of your order.' ?></p>
 
-<?php if ($flash): ?><div class="alert alert-success ob-alert"><?= $e($flash) ?></div><?php endif; ?>
+<?php $modalMsg = $flash; include __DIR__ . '/../includes/flash_modal.php'; ?>
 
 <?php if ($status === 'Cancelled'): ?>
     <div class="ob-track cancelled"><div class="ob-track-step"><span class="dot"></span><em>Cancelled</em></div></div>
@@ -89,7 +95,7 @@ include __DIR__ . '/../includes/order_head.php';
     <?php endif; ?>
 
     <div class="ob-actions">
-        <a href="<?= $backUrl ?>" class="btn btn-secondary btn-sm">Back</a>
+        <a href="<?= $e($backUrl) ?>" class="btn btn-secondary btn-sm">Back</a>
 
         <?php if ($o['paymentStatus'] === 'Completed'): ?>
             <a href="../Receipt/receipt_view.php?id=<?= urlencode($o['paymentID']) ?>" class="btn btn-secondary btn-sm">View Receipt</a>
@@ -97,15 +103,15 @@ include __DIR__ . '/../includes/order_head.php';
 
         <?php if ($isAdmin && $status === 'Pending'): ?>
             <a href="../Payment/payment_add.php" class="btn btn-secondary btn-sm">Record Payment</a>
-            <a href="order_edit.php?id=<?= urlencode($o['orderID']) ?>" class="btn btn-gold btn-sm">Edit</a>
+            <a href="order_edit.php?id=<?= urlencode($o['orderID']) ?>&amp;back=<?= urlencode($here) ?>" class="btn btn-gold btn-sm">Edit</a>
         <?php endif; ?>
 
         <?php if ($status === 'Pending'): ?>
-            <a href="order_cancel.php?id=<?= urlencode($o['orderID']) ?>" class="btn btn-danger btn-sm">Cancel Order</a>
+            <a href="order_cancel.php?id=<?= urlencode($o['orderID']) ?>&amp;back=<?= urlencode($here) ?>" class="btn btn-danger btn-sm">Cancel Order</a>
         <?php endif; ?>
 
         <?php if ($isAdmin && $status !== 'Completed'): ?>
-            <a href="order_delete.php?id=<?= urlencode($o['orderID']) ?>" class="btn btn-danger btn-sm">Delete</a>
+            <a href="order_delete.php?id=<?= urlencode($o['orderID']) ?>&amp;back=<?= urlencode($backUrl) ?>" class="btn btn-danger btn-sm">Delete</a>
         <?php endif; ?>
     </div>
 </div>

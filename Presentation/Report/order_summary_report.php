@@ -12,7 +12,6 @@ $t       = $r['totals'];
 function bar_pct($v, $max): int { return $max > 0 ? (int)round($v / $max * 100) : 0; }
 $maxDay   = $r['byDay']    ? max(array_column($r['byDay'], 'orders')) : 0;
 $maxItem  = $r['topItems'] ? max(array_column($r['topItems'], 'qty')) : 0;
-$maxTable = $r['tables']   ? max(array_column($r['tables'], 'orders')) : 0;
 
 $pageTitle = 'Order Summary Report';
 $bodyClass = 'feedback-page order-page list-page';
@@ -70,21 +69,6 @@ include __DIR__ . '/../includes/order_head.php';
                     <td><?= $e($it['foodName']) ?></td>
                     <td><?= (int)$it['qty'] ?></td>
                     <td><div class="ob-bar"><span style="width:<?= bar_pct($it['qty'], $maxItem) ?>%"></span></div></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <h2 class="ob-cat">Busiest Tables (dine-in)</h2>
-        <table class="table-clean">
-            <thead><tr><th>Table</th><th>Orders</th><th style="width:34%;"></th></tr></thead>
-            <tbody>
-            <?php if (!$r['tables']): ?><tr><td colspan="3">No dine-in orders in this period.</td></tr><?php endif; ?>
-            <?php foreach ($r['tables'] as $tb): ?>
-                <tr>
-                    <td>Table <?= $e($tb['tableNumber']) ?></td>
-                    <td><?= (int)$tb['orders'] ?></td>
-                    <td><div class="ob-bar"><span style="width:<?= bar_pct($tb['orders'], $maxTable) ?>%"></span></div></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

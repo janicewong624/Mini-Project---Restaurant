@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../business/PaymentService.php';
 $service    = new PaymentService();
 $orders     = $service->getPayableOrders();
 $errors     = [];
-$orderID    = '';
+$orderID    = $_GET['order'] ?? '';
 $method     = '';
 $onlineType = '';
 
@@ -77,7 +77,7 @@ include __DIR__ . '/../includes/header.php';
         </div>
 
         <button type="submit" class="btn btn-gold btn-sm">Confirm Payment</button>
-        <a href="payment_list.php" class="btn btn-secondary btn-sm">Back</a>
+        <a href="<?= isset($_GET['order']) ? '../Order/order_list.php' : 'payment_list.php' ?>" class="btn btn-secondary btn-sm">Back</a>
     </form>
 </div>
 
