@@ -45,7 +45,7 @@ include __DIR__ . '/../includes/header.php';
                 <?php foreach ($orders as $o): ?>
                     <option value="<?= $e($o['orderID']) ?>" data-amount="<?= number_format((float)$o['totalAmount'], 2) ?>"
                         <?= $orderID === $o['orderID'] ? 'selected' : '' ?>>
-                        <?= $e($o['orderID']) ?> · Table <?= $e($o['tableNumber']) ?> · <?= $e($o['name']) ?>
+                        <?= $e($o['orderID']) ?> · <?= $o['tableNumber'] !== null ? 'Table ' . $e($o['tableNumber']) : 'Takeaway' ?> · <?= $e($o['name']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>

@@ -9,7 +9,7 @@ class FeedbackData {
     }
 
     public function userExists(string $userID): bool {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM user WHERE userID = ?");
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE id = ?");
         $stmt->execute([$userID]);
         return $stmt->fetchColumn() > 0;
     }
@@ -24,17 +24,17 @@ class FeedbackData {
     }
 
     public function findAll(): array {
-        $sql = "SELECT f.feedbackID, f.userID, u.name, f.rating, f.comment, f.feedbackDate
+        $sql = "SELECT f.feedbackID, f.userID, u.full_name AS name, f.rating, f.comment, f.feedbackDate
                 FROM feedback f
-                JOIN user u ON f.userID = u.userID
+                JOIN users u ON f.userID = u.id
                 ORDER BY f.feedbackDate DESC, f.feedbackID DESC";
         return $this->pdo->query($sql)->fetchAll();
     }
 
     public function findById(string $id): ?array {
         $stmt = $this->pdo->prepare(
-            "SELECT f.feedbackID, f.userID, u.name, f.rating, f.comment, f.feedbackDate
-             FROM feedback f JOIN user u ON f.userID = u.userID
+            "SELECT f.feedbackID, f.userID, u.full_name AS name, f.rating, f.comment, f.feedbackDate
+             FROM feedback f JOIN users u ON f.userID = u.id
              WHERE f.feedbackID = ?"
         );
         $stmt->execute([$id]);

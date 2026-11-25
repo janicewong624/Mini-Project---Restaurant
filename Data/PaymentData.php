@@ -14,20 +14,20 @@ class PaymentData {
 
     public function findAll(): array {
         return $this->pdo->query(
-            "SELECT p.*, u.name
+            "SELECT p.*, u.full_name AS name
              FROM payment p
              JOIN orders o ON p.orderID = o.orderID
-             JOIN user u ON o.userID = u.userID
+             JOIN users u ON o.userID = u.id
              ORDER BY p.paymentID DESC"
         )->fetchAll();
     }
 
     public function findById(string $id): ?array {
         $stmt = $this->pdo->prepare(
-            "SELECT p.*, u.name
+            "SELECT p.*, u.full_name AS name
              FROM payment p
              JOIN orders o ON p.orderID = o.orderID
-             JOIN user u ON o.userID = u.userID
+             JOIN users u ON o.userID = u.id
              WHERE p.paymentID = ?"
         );
         $stmt->execute([$id]);
@@ -42,7 +42,7 @@ class PaymentData {
 
     public function getOrder(string $orderID): ?array {
         $stmt = $this->pdo->prepare(
-            "SELECT o.*, u.name FROM orders o JOIN user u ON o.userID = u.userID WHERE o.orderID = ?"
+            "SELECT o.*, u.full_name AS name FROM orders o JOIN users u ON o.userID = u.id WHERE o.orderID = ?"
         );
         $stmt->execute([$orderID]);
         return $stmt->fetch() ?: null;
@@ -51,10 +51,10 @@ class PaymentData {
     /** 還沒付款（沒有付款紀錄，或付款還是 Pending）且沒被取消的訂單 */
     public function getPayableOrders(): array {
         return $this->pdo->query(
-            "SELECT o.orderID, o.totalAmount, u.name, t.tableNumber
+            "SELECT o.orderID, o.totalAmount, u.full_name AS name, t.tableNumber
              FROM orders o
-             JOIN user u ON o.userID = u.userID
-             JOIN restaurant_table t ON o.tableID = t.tableID
+             JOIN users u ON o.userID = u.id
+             LEFT JOIN restaurant_table t ON o.tableID = t.tableID
              LEFT JOIN payment p ON p.orderID = o.orderID
              WHERE o.orderStatus <> 'Cancelled'
                AND (p.paymentID IS NULL OR p.paymentStatus = 'Pending')

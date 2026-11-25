@@ -27,15 +27,15 @@ class ReceiptData {
         return $stmt->fetch() ?: null;
     }
 
-    /** 收據表頭：付款 + 訂單 + 顧客 + 桌號（不重複存內容，查看時才 join） */
+    /** 收據表頭：付款 + 訂單 + 顧客 + 桌號（外帶訂單沒有桌號，所以用 LEFT JOIN） */
     public function getHeader(string $paymentID): ?array {
         $stmt = $this->pdo->prepare(
             "SELECT p.paymentID, p.paymentAmount, p.paymentMethod, p.onlineType, p.paymentDate, p.paymentStatus,
-                    o.orderID, o.orderType, u.name AS customerName, u.email AS customerEmail, t.tableNumber
+                    o.orderID, o.orderType, u.full_name AS customerName, u.email AS customerEmail, t.tableNumber
              FROM payment p
              JOIN orders o ON p.orderID = o.orderID
-             JOIN user u ON o.userID = u.userID
-             JOIN restaurant_table t ON o.tableID = t.tableID
+             JOIN users u ON o.userID = u.id
+             LEFT JOIN restaurant_table t ON o.tableID = t.tableID
              WHERE p.paymentID = ?"
         );
         $stmt->execute([$paymentID]);
