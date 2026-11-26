@@ -33,26 +33,32 @@ $navA = fn(string $key): string => $navCurrent === $key ? ' class="active" aria-
         </a>
 
         <div class="nav-links">
-            <a href="<?= $base ?>index.php"<?= $navA('home') ?>>Home</a>
+            <?php if ($role !== 'Administrator'): ?>
+                <a href="<?= $base ?>index.php"<?= $navA('home') ?>>Home</a>
+            <?php endif; ?>
 
             <?php if ($role === 'Customer'): ?>
                 <a href="<?= $base ?>presentation/menu/"<?= $navA('menu') ?>>Menu</a>
                 <a href="<?= $base ?>presentation/order/"<?= $navA('order') ?>>My Orders</a>
                 <a href="<?= $base ?>presentation/feedback/feedback_add.php"<?= $navA('feedback') ?>>Feedback</a>
+                <a href="<?= $base ?>presentation/about/"<?= $navA('about') ?>>About</a>
                 <span class="nav-user">Hi, <?= $e($name) ?></span>
                 <a href="<?= $base ?>presentation/auth/logout.php" class="btn-nav">Logout</a>
 
             <?php elseif ($role === 'Administrator'): ?>
-                <a href="<?= $base ?>presentation/customer/"<?= $navA('customer') ?>>Customers</a>
-                <a href="<?= $base ?>presentation/menu/">Menu</a>
-                <a href="<?= $base ?>presentation/table/"<?= $navA('table') ?>>Tables</a>
-                <a href="<?= $base ?>presentation/order/"<?= $navA('order') ?>>Orders</a>
-                <a href="<?= $base ?>presentation/payment/payment_list.php"<?= $navA('payment') ?>>Payments</a>
                 <a href="<?= $base ?>presentation/report/"<?= $navA('report') ?>>Reports</a>
+                <a href="<?= $base ?>presentation/order/"<?= $navA('order') ?>>Orders</a>
+                <a href="<?= $base ?>presentation/table/"<?= $navA('table') ?>>Tables</a>
+                <a href="<?= $base ?>presentation/customer/"<?= $navA('customer') ?>>Customers</a>
+                <a href="<?= $base ?>presentation/menu/"<?= $navA('menu') ?>>Menu</a>
                 <a href="<?= $base ?>presentation/feedback/feedback_list.php"<?= $navA('feedback') ?>>Feedback</a>
+                <a href="<?= $base ?>presentation/payment/payment_list.php"<?= $navA('payment') ?> title="Payments">💳 Payment</a>
                 <a href="<?= $base ?>presentation/auth/logout.php" class="btn-nav">Logout</a>
 
             <?php else: ?>
+                <a href="<?= $base ?>presentation/menu/"<?= $navA('menu') ?>>Menu</a>
+                <a href="<?= $base ?>presentation/feedback/feedback_add.php"<?= $navA('feedback') ?>>Feedback</a>
+                <a href="<?= $base ?>presentation/about/"<?= $navA('about') ?>>About</a>
                 <a href="<?= $base ?>presentation/auth/register.php"<?= $navA('register') ?>>Register</a>
                 <a href="<?= $base ?>presentation/auth/login.php" class="btn-nav">Login</a>
             <?php endif; ?>

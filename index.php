@@ -98,8 +98,7 @@ $menuImageName = static function ($value): string {
                     <div class="dish-body">
                         <p class="popular-category"><?= $e($dish['category']) ?></p>
                         <h3><?= $e($dish['foodName']) ?></h3>
-                        <p><?= $e($dish['description'] ?? '') ?></p>
-                        <span class="price">RM <?= number_format((float)$dish['price'], 2) ?></span>
+                        <p class="dish-desc"><?= $e($dish['description'] ?? '') ?></p>
                     </div>
                 </article>
             <?php endforeach; ?>
@@ -146,12 +145,6 @@ $menuImageName = static function ($value): string {
 </section>
 
 <!-- ============ Footer ============ -->
-<footer>
-    <div class="container">
-        <div class="serif"><span class="gold">◆</span> <?= $e($restaurantName) ?> <span class="gold">◆</span></div>
-        <p>Open daily 10:00 AM – 10:00 PM</p>
-        <p class="copy">© <?= date('Y') ?> <?= $e($restaurantName) ?> · AMCS2194 Mini Project</p>
-    </div>
-</footer>
+<?php include __DIR__ . '/Presentation/includes/site_footer.php'; ?>
 
 </body>
