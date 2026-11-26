@@ -36,7 +36,7 @@ $menuImageName = static function ($value): string {
 
 <!-- ============ Hero ============ -->
 <header class="hero">
-    <div class="hero-inner">
+    <div class="hero-inner" data-reveal="zoom">
         <div class="eyebrow">Welcome to</div>
         <h1><?= $e($restaurantName) ?></h1>
         <div class="divider"></div>
@@ -55,17 +55,17 @@ $menuImageName = static function ($value): string {
 <!-- ============ Info cards ============ -->
 <div class="container">
     <div class="info-cards">
-        <div class="info-card">
+        <div class="info-card" data-reveal="up" style="--d:0s">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
             <h3>Opening Hours</h3>
             <p>Daily 10:00 AM – 10:00 PM</p>
         </div>
-        <div class="info-card">
+        <div class="info-card" data-reveal="up" style="--d:.15s">
             <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9v.01M18 15v.01"/></svg>
             <h3>Pay at Counter</h3>
             <p>Cash or online payment</p>
         </div>
-        <div class="info-card">
+        <div class="info-card" data-reveal="up" style="--d:.3s">
             <svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>
             <h3>Rate Your Meal</h3>
             <p>Share your feedback with us</p>
@@ -76,7 +76,7 @@ $menuImageName = static function ($value): string {
 <!-- ============ Popular dishes ============ -->
 <section>
     <div class="container">
-        <div class="section-title">
+        <div class="section-title" data-reveal="up">
             <div class="eyebrow">Our Specials</div>
             <h2>Popular Dishes</h2>
             <div class="line"></div>
@@ -85,9 +85,9 @@ $menuImageName = static function ($value): string {
             <?php if (!$popularDishes): ?>
                 <p class="popular-empty">Our popular dishes are being selected. Please check back soon.</p>
             <?php endif; ?>
-            <?php foreach ($popularDishes as $dish): ?>
+            <?php foreach ($popularDishes as $i => $dish): ?>
                 <?php $imageName = $menuImageName($dish['image'] ?? ''); ?>
-                <article class="dish">
+                <article class="dish" data-reveal="zoom" style="--d:<?= $i * 0.12 ?>s">
                     <?php if ($imageName !== ''): ?>
                         <div class="dish-img">
                             <img src="Assets/images/menu/<?= rawurlencode($imageName) ?>"
@@ -112,23 +112,23 @@ $menuImageName = static function ($value): string {
 <!-- ============ How it works ============ -->
 <section class="process">
     <div class="container">
-        <div class="section-title">
+        <div class="section-title" data-reveal="up">
             <div class="eyebrow">Simple &amp; Easy</div>
             <h2>How It Works</h2>
             <div class="line"></div>
         </div>
         <div class="steps">
-            <div class="step"><div class="num">01</div><h3>Login</h3><p>Sign in to your account</p></div>
-            <div class="step"><div class="num">02</div><h3>Order</h3><p>Pick your dishes from the menu</p></div>
-            <div class="step"><div class="num">03</div><h3>Pay</h3><p>Pay at the counter and get your receipt</p></div>
-            <div class="step"><div class="num">04</div><h3>Rate Us</h3><p>Tell us how we did</p></div>
+            <div class="step" data-reveal="up" style="--d:0s"><div class="num">01</div><h3>Login</h3><p>Sign in to your account</p></div>
+            <div class="step" data-reveal="up" style="--d:.15s"><div class="num">02</div><h3>Order</h3><p>Pick your dishes from the menu</p></div>
+            <div class="step" data-reveal="up" style="--d:.3s"><div class="num">03</div><h3>Pay</h3><p>Pay at the counter and get your receipt</p></div>
+            <div class="step" data-reveal="up" style="--d:.45s"><div class="num">04</div><h3>Rate Us</h3><p>Tell us how we did</p></div>
         </div>
     </div>
 </section>
 
 <!-- ============ Feedback ============ -->
 <section class="feedback-band">
-    <div class="container">
+    <div class="container" data-reveal="up">
         <div class="section-title">
             <div class="eyebrow">Your Opinion Matters</div>
             <h2>How Was Your Meal?</h2>
@@ -147,4 +147,6 @@ $menuImageName = static function ($value): string {
 <!-- ============ Footer ============ -->
 <?php include __DIR__ . '/Presentation/includes/site_footer.php'; ?>
 
+<script src="assets/js/reveal.js"></script>
 </body>
+</html>
