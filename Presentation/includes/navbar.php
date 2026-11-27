@@ -42,7 +42,7 @@ $navA = fn(string $key): string => $navCurrent === $key ? ' class="active" aria-
                 <a href="<?= $base ?>presentation/order/"<?= $navA('order') ?>>My Orders</a>
                 <a href="<?= $base ?>presentation/feedback/feedback_add.php"<?= $navA('feedback') ?>>Feedback</a>
                 <a href="<?= $base ?>presentation/about/"<?= $navA('about') ?>>About</a>
-                <span class="nav-user">Hi, <?= $e($name) ?></span>
+                <a href="<?= $base ?>presentation/profile/"<?= $navA('profile') ?> title="Profile">👤 <?= $e($name) ?></a>
                 <a href="<?= $base ?>presentation/auth/logout.php" class="btn-nav">Logout</a>
 
             <?php elseif ($role === 'Administrator'): ?>

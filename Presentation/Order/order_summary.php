@@ -46,6 +46,7 @@ include __DIR__ . '/../includes/order_head.php';
 
 <h1 class="page-title">Order Summary</h1>
 <p class="page-sub">Check your items. Change the quantity with + / − (0 removes an item).</p>
+<p class="page-sub" style="font-size:.8rem;">All prices are in Ringgit Malaysia and are subject to 10% service charge and 6% SST.</p>
 
 <div class="ob-steps no-print">
     <a class="done" href="../Menu/index.php">1. Choose food</a><span class="active">2. Order summary</span><span>3. Dine-in / Takeaway</span><span>4. Track in My Orders</span>

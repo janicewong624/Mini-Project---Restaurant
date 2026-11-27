@@ -25,6 +25,8 @@ $errors = [
 ];
 $errorCode = is_string($_GET['error'] ?? null) ? $_GET['error'] : '';
 $error = $errors[$errorCode] ?? '';
+$loginNotice = is_string($_SESSION['login_notice'] ?? null) ? $_SESSION['login_notice'] : '';
+unset($_SESSION['login_notice']);
 $registered = ($_GET['registered'] ?? '') === 'success';
 $loginEmail = '';
 $emailFieldError = '';
@@ -74,10 +76,20 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $user = $result['user'];
             session_regenerate_id(true);
             unset($_SESSION['_dev']);
-            $_SESSION['userID'] = $user['userID'];
+                        $_SESSION['userID'] = $user['userID'];
             $_SESSION['name'] = $user['name'];
             $_SESSION['role'] = $user['role'];
-            header('Location: ../../index.php');
+
+            // 訪客下單時被請來登入：回到訂單摘要（購物車還在 session 裡）
+            $to = $_SESSION['after_login'] ?? '';
+            unset($_SESSION['after_login']);
+            if ($user['role'] === 'Customer' && $to === 'Presentation/Order/order_summary.php') {
+                header('Location: ../../' . $to);
+            } elseif ($user['role'] === 'Administrator') {
+                header('Location: ../report/');          // 管理員不看首頁
+            } else {
+                header('Location: ../../index.php');
+            }
             exit;
         }
     }
@@ -108,6 +120,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             <p>Sign in to continue your dining experience.</p>
         </div>
 
+        <?php if ($loginNotice !== ''): ?>
+            <div class="alert alert-success" role="status"><?= $e($loginNotice) ?></div>
+        <?php endif; ?>
         <?php if ($error !== ''): ?>
             <div class="alert alert-error" role="alert"><?= $e($error) ?></div>
         <?php elseif ($registered): ?>
@@ -147,12 +162,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     </section>
 </main>
 
-<footer class="auth-footer">
-    <div class="container">
-        <div class="serif"><span class="gold">◆</span> <?= $e($restaurantName) ?> <span class="gold">◆</span></div>
-        <p class="copy">© <?= date('Y') ?> · AMCS2194 Mini Project</p>
-    </div>
-</footer>
+<?php include __DIR__ . '/../includes/site_footer.php'; ?>
 <script src="../../Assets/js/auth.js"></script>
+
+<script>
+const ch = new BroadcastChannel('dinenest-auth');
+ch.onmessage = (ev) => {
+  if (ev.data === 'password-reset-done') {
+    window.focus();
+    window.location.href = 'login.php?reset=success';   // 回到登入頁，顯示「密碼已重設」
+  }
+};
+</script>
 </body>
 </html>

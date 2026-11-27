@@ -8,9 +8,10 @@
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         entry.target.classList.add('revealed');
-        io.unobserve(entry.target);
+      } else {
+        entry.target.classList.remove('revealed');
       }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   els.forEach(function (el) { io.observe(el); });
 })();

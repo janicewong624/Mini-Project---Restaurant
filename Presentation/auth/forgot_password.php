@@ -77,11 +77,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     </section>
 </main>
 
-<footer class="auth-footer">
-    <div class="container">
-        <div class="serif"><span class="gold">◆</span> <?= $e($restaurantName) ?> <span class="gold">◆</span></div>
-        <p class="copy">© <?= date('Y') ?> · AMCS2194 Mini Project</p>
-    </div>
-</footer>
+<?php include __DIR__ . '/../includes/site_footer.php'; ?>
+
+<script>
+const ch = new BroadcastChannel('dinenest-auth');
+ch.onmessage = (ev) => {
+  if (ev.data === 'password-reset-done') {
+    window.focus();
+    window.location.href = 'login.php?reset=success';   // 回到登入頁，顯示「密碼已重設」
+  }
+};
+</script>
 </body>
 </html>

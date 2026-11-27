@@ -141,4 +141,20 @@ class UserData {
             throw $error;
         }
     }
+
+    public function findProfile(string $id): ?array {
+        $stmt = $this->pdo->prepare("SELECT id AS userID, full_name AS name, email, phone AS contactNumber, password FROM users WHERE id = ? LIMIT 1");
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function updateProfile(string $id, string $name, string $phone): void {
+        $stmt = $this->pdo->prepare("UPDATE users SET full_name = ?, phone = ? WHERE id = ?");
+        $stmt->execute([$name, $phone, $id]);
+    }
+
+    public function updatePassword(string $id, string $hash): void {
+        $stmt = $this->pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $stmt->execute([$hash, $id]);
+    }
 }

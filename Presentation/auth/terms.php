@@ -69,11 +69,6 @@ $e = static fn($value) => htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
     </article>
 </main>
 
-<footer class="auth-footer">
-    <div class="container">
-        <div class="serif"><span class="gold">◆</span> <?= $e($restaurantName) ?> <span class="gold">◆</span></div>
-        <p class="copy">© <?= date('Y') ?> · AMCS2194 Mini Project</p>
-    </div>
-</footer>
+<?php include __DIR__ . '/../includes/site_footer.php'; ?>
 </body>
 </html>

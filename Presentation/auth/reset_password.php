@@ -15,6 +15,7 @@ $confirmPassword = isset($_POST['confirm_password']) && is_string($_POST['confir
     : '';
 $error = '';
 $service = null;
+$resetDone = false;
 
 if (empty($_SESSION['auth_csrf'])) {
     $_SESSION['auth_csrf'] = bin2hex(random_bytes(32));
@@ -34,15 +35,15 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     } else {
         $result = $service->resetPassword($token, $password, $confirmPassword);
         if ($result['success']) {
-            header('Location: login.php?reset=success');
-            exit;
+            $resetDone = true;
+        } else {
+            $error = $result['error'];
         }
-        $error = $result['error'];
     }
 }
 
-$tokenValid = $service !== null && $service->isTokenValid($token);
-if (!$tokenValid && $error === '') {
+$tokenValid = !$resetDone && $service !== null && $service->isTokenValid($token);
+if (!$resetDone && !$tokenValid && $error === '') {
     $error = 'This reset link is invalid or has expired. Request a new one to continue.';
 }
 ?>
@@ -68,48 +69,56 @@ if (!$tokenValid && $error === '') {
 
         <div class="auth-heading">
             <h1 id="form-title">Reset Password</h1>
-            <p>Choose a new password for your account.</p>
+            <p><?= $resetDone ? 'All done!' : 'Choose a new password for your account.' ?></p>
         </div>
 
-        <?php if ($error !== ''): ?>
-            <div class="alert alert-error" role="alert"><?= $e($error) ?></div>
-        <?php endif; ?>
+        <?php if ($resetDone): ?>
+            <div class="alert alert-success" role="status">
+                Your password has been reset. You can return to your previous tab to sign in.
+            </div>
+            <a class="auth-submit terms-back" href="login.php?reset=success">Back to Sign In</a>
+            <script>
+                const ch = new BroadcastChannel('dinenest-auth');
+                ch.postMessage('password-reset-done');
+                setTimeout(() => { window.close(); }, 800);
+            </script>
 
-        <?php if ($tokenValid): ?>
-            <form action="reset_password.php" method="post">
-                <input type="hidden" name="csrf_token" value="<?= $e($_SESSION['auth_csrf']) ?>">
-                <input type="hidden" name="token" value="<?= $e($token) ?>">
-                <div class="form-group">
-                    <label class="field" for="password">New Password</label>
-                    <div class="auth-password">
-                        <input class="form-control" type="password" id="password" name="password"
-                               minlength="8" autocomplete="new-password" required>
-                        <button class="auth-toggle" type="button" data-toggle-password="password"
-                                aria-label="Show password" aria-pressed="false">Show</button>
-                    </div>
-                    <small class="auth-hint">At least 8 characters, including letters and numbers.</small>
-                </div>
-                <div class="form-group">
-                    <label class="field" for="confirm-password">Confirm New Password</label>
-                    <input class="form-control" type="password" id="confirm-password" name="confirm_password"
-                           minlength="8" autocomplete="new-password" required>
-                </div>
-                <button type="submit" class="auth-submit">Save New Password <span aria-hidden="true">→</span></button>
-            </form>
         <?php else: ?>
-            <a class="auth-submit terms-back" href="forgot_password.php">Request a New Reset Link</a>
-        <?php endif; ?>
+            <?php if ($error !== ''): ?>
+                <div class="alert alert-error" role="alert"><?= $e($error) ?></div>
+            <?php endif; ?>
 
-        <p class="auth-switch"><a href="login.php">Back to Sign In</a></p>
+            <?php if ($tokenValid): ?>
+                <form action="reset_password.php" method="post">
+                    <input type="hidden" name="csrf_token" value="<?= $e($_SESSION['auth_csrf']) ?>">
+                    <input type="hidden" name="token" value="<?= $e($token) ?>">
+                    <div class="form-group">
+                        <label class="field" for="password">New Password</label>
+                        <div class="auth-password">
+                            <input class="form-control" type="password" id="password" name="password"
+                                   minlength="8" autocomplete="new-password" required>
+                            <button class="auth-toggle" type="button" data-toggle-password="password"
+                                    aria-label="Show password" aria-pressed="false">Show</button>
+                        </div>
+                        <small class="auth-hint">At least 8 characters, including letters and numbers.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="field" for="confirm-password">Confirm New Password</label>
+                        <input class="form-control" type="password" id="confirm-password" name="confirm_password"
+                               minlength="8" autocomplete="new-password" required>
+                    </div>
+                    <button type="submit" class="auth-submit">Save New Password <span aria-hidden="true">→</span></button>
+                </form>
+            <?php else: ?>
+                <a class="auth-submit terms-back" href="forgot_password.php">Request a New Reset Link</a>
+            <?php endif; ?>
+
+            <p class="auth-switch"><a href="login.php">Back to Sign In</a></p>
+        <?php endif; ?>
     </section>
 </main>
 
-<footer class="auth-footer">
-    <div class="container">
-        <div class="serif"><span class="gold">◆</span> <?= $e($restaurantName) ?> <span class="gold">◆</span></div>
-        <p class="copy">© <?= date('Y') ?> · AMCS2194 Mini Project</p>
-    </div>
-</footer>
+<?php include __DIR__ . '/../includes/site_footer.php'; ?>
 <script src="../../Assets/js/auth.js"></script>
 </body>
 </html>

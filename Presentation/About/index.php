@@ -4,7 +4,6 @@ $pageTitle = 'About Us';
 $bodyClass = 'about-page';
 include __DIR__ . '/../includes/header.php';
 ?>
-</div></main>
 
 <div class="about-wrap">
     <div class="about-head" data-reveal="up">
@@ -48,5 +47,4 @@ include __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<div class="container"><div>
 <?php include __DIR__ . '/../includes/footer.php'; ?>

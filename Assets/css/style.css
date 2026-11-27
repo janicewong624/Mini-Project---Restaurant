@@ -878,3 +878,27 @@ textarea.form-control { resize: none; height: 110px; }
   .about-row.reverse .about-photo { order: 0; }
   .about-photo img, .about-photo .ph { height: 280px; }
 }
+
+.menu-note {
+  display: block; width: fit-content; margin: 0 auto 16px;
+  padding: 8px 18px; border-radius: 999px;
+  background: #fff; color: #5c7465; border: 1px solid #d4a94f;
+  font-size: .8rem; font-weight: 800; letter-spacing: .3px; text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+/* ===== Header 固定置頂（全站） ===== */
+.navbar,
+.inner-page .navbar {
+  position: sticky; top: 0; left: auto; right: auto; z-index: 100;
+}
+body { padding-top: 0; }
+
+/* 首頁：橫幅延伸到導覽列後面，所以不能用 sticky 佔位 */
+body:not(.inner-page):not(.auth-page) .navbar { position: fixed; left: 0; right: 0; }
+body:not(.inner-page):not(.auth-page) .hero { margin-top: 0; padding-top: 140px; }
+
+@media (max-width: 820px) {
+  .navbar, .inner-page .navbar,
+  body:not(.inner-page):not(.auth-page) .navbar { position: sticky; }
+}

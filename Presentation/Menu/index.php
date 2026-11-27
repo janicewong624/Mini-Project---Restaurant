@@ -5,13 +5,16 @@ require_once __DIR__ . '/../../Business/MenuService.php';
 
 $isAdmin    = ($_SESSION['role'] ?? '') === 'Administrator';
 $csrfToken  = '';
-$isCustomer = ($_SESSION['role'] ?? '') === 'Customer'; 
-$cart       = [];
+$isCustomer = ($_SESSION['role'] ?? '') === 'Customer';
+$canOrder   = !$isAdmin;                       // 顧客和訪客都可以選餐
+$cart       = $_SESSION['cart'] ?? [];
 $orderFlash = '';
+
+if ($canOrder) {
+    require_once __DIR__ . '/../../Business/OrderService.php';
+}
 if ($isCustomer) {
     require_once __DIR__ . '/../includes/order_guard.php';
-    require_once __DIR__ . '/../../Business/OrderService.php';
-    $cart       = $_SESSION['cart'] ?? [];
     $orderFlash = order_flash_get();
 }
 if ($isAdmin) {
@@ -75,7 +78,7 @@ foreach ($displayCategories as $index => $category) {
 $pageTitle = 'Menu';
 $bodyClass = 'menu-page';
 include __DIR__ . '/../includes/header.php';
-if ($isCustomer) include __DIR__ . '/../includes/order_head.php';   // 載入 order.css（數量加減、下方小計列）
+if ($canOrder) include __DIR__ . '/../includes/order_head.php';   // 載入 order.css（數量加減、下方小計列）
 ?>
 
 <section class="menu-hero">
@@ -88,6 +91,8 @@ if ($isCustomer) include __DIR__ . '/../includes/order_head.php';   // 載入 or
 
 <div class="menu-shell">
     <div class="menu-content">
+        <p class="menu-note">ALL PRICES ARE IN RINGGIT MALAYSIA AND ARE SUBJECT TO 10% SERVICE CHARGE AND 6% SST.</p>
+
         <div class="menu-toolbar">
             <div>
                 <p class="menu-toolbar-label" id="menu-item-count">
@@ -137,7 +142,7 @@ if ($isCustomer) include __DIR__ . '/../includes/order_head.php';   // 載入 or
             </span>
         </nav>
 
-        <?php if ($isCustomer): ?><form method="post" action="../Order/order_menu.php" id="menuOrderForm"><?php endif; ?>
+        <?php if ($canOrder): ?><form method="post" action="../Order/order_menu.php" id="menuOrderForm"><?php endif; ?>
         <div class="menu-category-stage" id="menu-category-stage" tabindex="0"
              aria-label="Menu categories. Swipe horizontally or use the arrow buttons to browse.">
         <?php foreach ($displayCategories as $index => $category): ?>
@@ -180,7 +185,7 @@ if ($isCustomer) include __DIR__ . '/../includes/order_head.php';   // 載入 or
                                     <span>RM</span>
                                     <strong><?= number_format((float)$item['price'], 2) ?></strong>
                                 </div>
-                                <?php if ($isCustomer): $q = (int)($cart[$item['menuItemID']] ?? 0); ?>
+                                <?php if ($canOrder): $q = (int)($cart[$item['menuItemID']] ?? 0); ?>
                                     <div class="menu-card-order">
                                         <div class="qty-stepper small" data-price="<?= $e($item['price']) ?>">
                                             <button type="button" class="qty-minus" aria-label="Less">−</button>
@@ -215,7 +220,7 @@ if ($isCustomer) include __DIR__ . '/../includes/order_head.php';   // 載入 or
         <p class="menu-no-results" id="menu-no-results" hidden>No menu items match your search.</p>
         </div>
 
-        <?php if ($isCustomer): ?>
+        <?php if ($canOrder): ?>
             <div class="ob-total-bar">
                 <div><span id="totalCount">0</span> item(s) · <strong>RM <span id="totalAmount">0.00</span></strong></div>
                 <button type="submit" class="btn btn-gold btn-sm">Review Order</button>
@@ -342,7 +347,7 @@ categoryStage.addEventListener('touchend', (event) => {
 showCategory(activeCategoryIndex, false);
 </script>
 
-<?php if ($isCustomer): ?>
+<?php if ($canOrder): ?>
 <script>
 // 顧客選餐：數量加減 + 下方小計列
 const steppers = document.querySelectorAll('.qty-stepper');

@@ -153,12 +153,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     </section>
 </main>
 
-<footer class="auth-footer">
-    <div class="container">
-        <div class="serif"><span class="gold">◆</span> <?= $e($restaurantName) ?> <span class="gold">◆</span></div>
-        <p class="copy">© <?= date('Y') ?> · AMCS2194 Mini Project</p>
-    </div>
-</footer>
+<?php include __DIR__ . '/../includes/site_footer.php'; ?>
 <script src="../../Assets/js/auth.js"></script>
 </body>
 </html>
