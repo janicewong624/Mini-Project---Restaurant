@@ -35,7 +35,16 @@ $menuImageName = static function ($value): string {
 <?php $base = ''; include 'Presentation/includes/navbar.php'; ?>
 
 <!-- ============ Hero ============ -->
-<header class="hero">
+<header class="hero hero-slider">
+    <div class="slides" aria-hidden="true">
+        <div class="slide active" style="background-image:url('assets/images/hero.jpg')"></div>
+        <div class="slide" style="background-image:url('assets/images/feedback1.jpg')"></div>
+        <div class="slide" style="background-image:url('assets/images/payment1.jpg')"></div>
+    </div>
+
+    <button type="button" class="slide-arrow prev" aria-label="Previous banner">‹</button>
+    <button type="button" class="slide-arrow next" aria-label="Next banner">›</button>
+
     <div class="hero-inner" data-reveal="zoom">
         <div class="eyebrow">Welcome to</div>
         <h1><?= $e($restaurantName) ?></h1>
@@ -45,11 +54,12 @@ $menuImageName = static function ($value): string {
         <?php if ($role): ?>
             <a href="presentation/menu/" class="btn btn-gold">VIEW MENU</a>
         <?php else: ?>
-            <a href="presentation/auth/login.php" class="btn btn-gold">LOGIN TO ORDER</a>
+            <a href="presentation/menu/" class="btn btn-gold">VIEW MENU</a>
             <a href="presentation/auth/register.php" class="btn btn-line">CREATE ACCOUNT</a>
         <?php endif; ?>
     </div>
-    <div class="scroll-hint"></div>
+
+    <div class="slide-dots" role="tablist" aria-label="Banner selector"></div>
 </header>
 
 <!-- ============ Info cards ============ -->
@@ -148,5 +158,7 @@ $menuImageName = static function ($value): string {
 <?php include __DIR__ . '/Presentation/includes/site_footer.php'; ?>
 
 <script src="assets/js/reveal.js"></script>
+
+<script src="assets/js/slider.js"></script>
 </body>
 </html>
