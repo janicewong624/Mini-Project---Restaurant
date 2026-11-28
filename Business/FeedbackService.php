@@ -70,4 +70,22 @@ class FeedbackService {
         $this->data->delete($id);
         return ['success' => true, 'errors' => []];
     }
+
+    public function recent(int $limit = 12): array { return $this->data->findRecent($limit); }
+
+    public function summary(): array { return $this->data->summary(); }
+
+    private function cleanDate(?string $d): ?string {
+    return ($d && preg_match('/^\d{4}-\d{2}-\d{2}$/', $d)) ? $d : null;
+    }
+    public function filtered(string $rating, string $from, string $to): array {
+        $r = ctype_digit($rating) && $rating >= 1 && $rating <= 5 ? (int)$rating : null;
+        return $this->data->findFiltered($r, $this->cleanDate($from), $this->cleanDate($to));
+    }
+    public function stats(string $from, string $to): array {
+        $dist  = $this->data->distribution($this->cleanDate($from), $this->cleanDate($to));
+        $count = array_sum($dist);
+        $sum   = 0; foreach ($dist as $star => $c) $sum += $star * $c;
+        return ['dist' => $dist, 'count' => $count, 'avg' => $count ? round($sum / $count, 1) : 0];
+    }
 }

@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once __DIR__ . '/Business/MenuService.php';
+require_once __DIR__ . '/Business/FeedbackService.php';
+try { $bubbles = (new FeedbackService())->recent(10); } catch (Throwable $t) { $bubbles = []; }
+$maskName = fn($n) => mb_substr((string)$n, 0, 1) . '***';
 
 $restaurantName = 'DineNest Restaurant';
 $tagline        = 'Good food, made with heart';
@@ -137,7 +140,15 @@ $menuImageName = static function ($value): string {
 </section>
 
 <!-- ============ Feedback ============ -->
-<section class="feedback-band">
+<section class="feedback-band bubble-zone">
+    <?php foreach ($bubbles as $k => $b): ?>
+        <div class="bubble <?= $k % 2 ? 'right' : 'left' ?>" style="--delay:<?= $k * 2.2 ?>s;--dur:<?= 14 + ($k % 3) * 2 ?>s">
+            <span class="star-display"><?= str_repeat('★', (int)$b['rating']) ?></span>
+            <p><?= $e(mb_strimwidth($b['comment'], 0, 70, '…')) ?></p>
+            <small>— <?= $e($maskName($b['name'])) ?></small>
+        </div>
+    <?php endforeach; ?>
+
     <div class="container" data-reveal="up">
         <div class="section-title">
             <div class="eyebrow">Your Opinion Matters</div>
@@ -146,6 +157,7 @@ $menuImageName = static function ($value): string {
         </div>
         <div class="stars">★★★★★</div>
         <p>Your feedback helps us serve you better.</p>
+        <a href="presentation/feedback/" class="btn btn-line">READ REVIEWS</a>
         <?php if ($role === 'Customer'): ?>
             <a href="presentation/feedback/feedback_add.php" class="btn btn-gold">LEAVE FEEDBACK</a>
         <?php elseif (!$role): ?>

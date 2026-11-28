@@ -16,8 +16,8 @@ $curDir  = preg_match('#/presentation/([^/]+)/#', $script, $m) ? $m[1] : 'home';
 $navCurrent = $curDir;
 if ($curDir === 'receipt') $navCurrent = 'payment';
 if ($curDir === 'auth')  $navCurrent = $curPage === 'register' ? 'register' : '';
-if ($curDir === 'order' && $role === 'Customer' && in_array($curPage, ['order_menu', 'order_summary', 'order_type'], true)) {
-    $navCurrent = 'menu';          // 顧客下單流程屬於 Menu
+if ($curDir === 'order' && $role !== 'Administrator' && in_array($curPage, ['order_menu', 'order_summary', 'order_type'], true)) {
+    $navCurrent = 'menu';          // 下單流程屬於 Menu（顧客和訪客都一樣）
 }
 $navA = fn(string $key): string => $navCurrent === $key ? ' class="active" aria-current="page"' : '';
 ?>

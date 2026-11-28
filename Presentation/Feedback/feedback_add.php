@@ -5,6 +5,8 @@ requireRole('Customer');
 require_once __DIR__ . '/../../business/FeedbackService.php';
 
 $service = new FeedbackService();
+try { $bubblePool = $service->recent(20); } catch (Throwable $t) { $bubblePool = []; }
+$maskName = fn($n) => mb_substr((string)$n, 0, 1) . '***';
 $userID = $_SESSION['userID'];
 $errors  = [];
 $success = '';
@@ -27,6 +29,8 @@ $pageTitle = 'Give Feedback';
 $bodyClass = 'feedback-page';
 include __DIR__ . '/../includes/header.php';
 ?>
+
+<?php include __DIR__ . '/../includes/bubbles.php'; ?>
 
 <h1 class="page-title">How was your meal?</h1>
 <p class="page-sub">Your feedback helps us serve you better.</p>

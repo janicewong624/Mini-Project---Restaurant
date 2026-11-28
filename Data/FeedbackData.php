@@ -53,4 +53,46 @@ class FeedbackData {
         $stmt = $this->pdo->prepare("DELETE FROM feedback WHERE feedbackID = ?");
         return $stmt->execute([$id]);
     }
+
+    public function findRecent(int $limit = 12, int $minRating = 1): array {
+        $stmt = $this->pdo->prepare(
+            "SELECT u.full_name AS name, f.rating, f.comment, f.feedbackDate
+             FROM feedback f JOIN users u ON f.userID = u.id
+             WHERE f.rating >= ? AND f.comment <> ''
+             ORDER BY f.feedbackDate DESC LIMIT " . (int)$limit
+        );
+        $stmt->execute([$minRating]);
+        return $stmt->fetchAll();
+    }
+
+    public function summary(): array {
+        $row = $this->pdo->query("SELECT COUNT(*) c, COALESCE(AVG(rating),0) a FROM feedback")->fetch();
+        return ['count' => (int)$row['c'], 'avg' => round((float)$row['a'], 1)];
+    }
+
+    public function findFiltered(?int $rating, ?string $from, ?string $to): array {
+    $sql = "SELECT f.feedbackID, f.userID, u.full_name AS name, f.rating, f.comment, f.feedbackDate
+            FROM feedback f JOIN users u ON f.userID = u.id WHERE 1=1";
+    $p = [];
+    if ($rating)  { $sql .= " AND f.rating = ?";              $p[] = $rating; }
+    if ($from)    { $sql .= " AND DATE(f.feedbackDate) >= ?"; $p[] = $from; }
+    if ($to)      { $sql .= " AND DATE(f.feedbackDate) <= ?"; $p[] = $to; }
+    $sql .= " ORDER BY f.feedbackDate DESC, f.feedbackID DESC";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($p);
+    return $stmt->fetchAll();
+}
+
+public function distribution(?string $from, ?string $to): array {
+    $sql = "SELECT rating, COUNT(*) c FROM feedback WHERE 1=1";
+    $p = [];
+    if ($from) { $sql .= " AND DATE(feedbackDate) >= ?"; $p[] = $from; }
+    if ($to)   { $sql .= " AND DATE(feedbackDate) <= ?"; $p[] = $to; }
+    $sql .= " GROUP BY rating";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($p);
+    $out = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+    foreach ($stmt->fetchAll() as $r) $out[(int)$r['rating']] = (int)$r['c'];
+    return $out;
+}
 }
